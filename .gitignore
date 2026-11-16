@@ -1,0 +1,20 @@
+# Configuração real: contém a senha do banco. Versionamos só o config.example.php.
+/config/config.php
+
+# Dependências de desenvolvimento (Composer/PHPUnit). O sistema roda sem elas.
+/vendor/
+
+# Arquivos enviados pelos usuários (dados reais, não código).
+/storage/uploads/*
+!/storage/uploads/.gitkeep
+
+# Logs e caches
+*.log
+/.phpunit.cache/
+/coverage/
+
+# Sistema operacional / editores
+Thumbs.db
+.DS_Store
+/.idea/
+/.vscode/

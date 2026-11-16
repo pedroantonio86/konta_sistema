@@ -1,0 +1,6 @@
+# Normaliza fins de linha (LF) no repositório: evita diffs falsos entre
+# as máquinas Windows da dupla.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.pdf binary

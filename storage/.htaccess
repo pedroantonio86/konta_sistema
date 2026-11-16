@@ -1,0 +1,4 @@
+# Defesa em profundidade: mesmo que o .htaccess da raiz seja alterado na
+# hospedagem, os uploads continuam inacessíveis por URL. O download é feito
+# só pela rota documentos/baixar, que checa login e empresa.
+Require all denied

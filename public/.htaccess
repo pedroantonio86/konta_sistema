@@ -1,0 +1,7 @@
+# Única pasta acessível pela web (sobrepõe o "Require all denied" da raiz).
+Require all granted
+
+# Não lista o conteúdo das pastas (ex.: public/assets/).
+Options -Indexes
+
+DirectoryIndex index.php

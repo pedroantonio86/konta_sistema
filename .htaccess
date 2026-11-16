@@ -1,0 +1,5 @@
+# Por quê: no XAMPP/InfinityFree o projeto inteiro fica dentro da pasta web.
+# Sem esta regra, config/, app/, database/ e storage/uploads/ poderiam ser
+# baixados pelo navegador. Bloqueamos tudo aqui; public/.htaccess libera
+# somente a pasta public/ (único ponto de entrada).
+Require all denied
