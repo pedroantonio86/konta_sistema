@@ -1,0 +1,15 @@
+{
+    "name": "konta/konta",
+    "description": "Controle de guias e obrigações fiscais entre escritório contábil e clientes.",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.5"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
