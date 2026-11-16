@@ -1,0 +1,12 @@
+/*
+ * Konta: complementos ao Bootstrap.
+ * Semáforo: faixa colorida à esquerda da linha/cartão da obrigação, com as
+ * mesmas cores dos selos (vermelho, amarelo, verde e cinza para paga).
+ */
+.semaforo-vencida { border-left: 4px solid var(--bs-danger) !important; }
+.semaforo-alerta  { border-left: 4px solid var(--bs-warning) !important; }
+.semaforo-em_dia  { border-left: 4px solid var(--bs-success) !important; }
+.semaforo-paga    { border-left: 4px solid var(--bs-secondary) !important; }
+
+/* Guia paga fica "apagada" na listagem: o que importa é o que falta pagar. */
+tr.semaforo-paga > td { color: var(--bs-secondary-color); }
