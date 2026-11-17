@@ -46,7 +46,7 @@ $cartoes = [
         'numero' => moeda($indicadores['total_pendente']),
         'detalhe' => 'soma das guias não pagas',
         'icone'  => 'wallet2',
-        'cor'    => 'primary', // cor da marca: total não é uma situação do semáforo
+        'cor'    => 'marca', // #155E75: total não é uma situação do semáforo
         'link'   => url('obrigacoes/index'),
     ],
 ];

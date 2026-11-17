@@ -38,7 +38,14 @@ function url(string $rota = '', array $params = []): string
 /** Caminho de arquivo estático em public/: asset('assets/css/app.css') */
 function asset(string $caminho): string
 {
-    return Config::obter('app.base_url', '/') . ltrim($caminho, '/');
+    $caminho = ltrim($caminho, '/');
+    $arquivo = __DIR__ . '/../public/' . $caminho;
+
+    // "?v=<data de modificação>": quando o arquivo muda, o endereço muda e o
+    // navegador baixa a versão nova, em vez de mostrar a antiga do cache.
+    $versao = is_file($arquivo) ? '?v=' . filemtime($arquivo) : '';
+
+    return Config::obter('app.base_url', '/') . $caminho . $versao;
 }
 
 /** 1234.5 -> "R$ 1.234,50" */
@@ -133,7 +140,8 @@ function icone(string $nome): string
 
 /**
  * Logo do Konta: quadrado com "K" + o nome, em SVG inline (sem arquivo,
- * sem internet). $branco = versão para fundo na cor da marca (login).
+ * sem internet). $branco = versão para fundo na cor da marca (barra
+ * superior e login): quadrado branco, "K" na cor da marca, nome branco.
  */
 function logo_konta(bool $branco = false): string
 {
@@ -143,7 +151,7 @@ function logo_konta(bool $branco = false): string
     return '<span class="logo' . ($branco ? ' logo-branco' : '') . '">'
         . '<svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false">'
         . '<rect width="32" height="32" rx="8" fill="' . $fundo . '"/>'
-        . '<text x="16" y="22.8" text-anchor="middle" font-family="Sora, sans-serif" font-weight="700" font-size="19" fill="' . $letra . '">K</text>'
+        . '<text x="16" y="22.8" text-anchor="middle" font-family="Sora, sans-serif" font-weight="800" font-size="19" fill="' . $letra . '">K</text>'
         . '</svg><span class="logo-texto">Konta</span></span>';
 }
 
