@@ -55,6 +55,7 @@ return [
         'obrigacoes/atualizar' => [ObrigacaoController::class, 'atualizar', $contador],
         'obrigacoes/excluir'   => [ObrigacaoController::class, 'excluir', $contador],
         'obrigacoes/pagar'     => [ObrigacaoController::class, 'pagar', $logados],
+        'obrigacoes/reabrir'   => [ObrigacaoController::class, 'reabrir', $contador],
 
         'documentos/enviar'    => [DocumentoController::class, 'enviar', $logados],
 

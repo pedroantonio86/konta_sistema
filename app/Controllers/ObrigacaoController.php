@@ -171,6 +171,25 @@ final class ObrigacaoController extends Controller
         $this->redirect('obrigacoes/ver', ['id' => $id]);
     }
 
+    /** Só o contador (rota): volta uma guia paga para pendente. */
+    public function reabrir(): void
+    {
+        $id = $this->idOu404($_POST);
+        $obrigacao = $this->buscarOu404($id);
+
+        if ($this->obrigacoes->reabrir($id)) {
+            $this->flash('success', sprintf(
+                '%s %s reaberta: voltou a pendente.',
+                Obrigacao::TIPOS[$obrigacao['tipo']],
+                competencia_br($obrigacao['competencia'])
+            ));
+        } else {
+            $this->flash('warning', 'Não está paga.');
+        }
+
+        $this->redirect('obrigacoes/ver', ['id' => $id]);
+    }
+
     public function excluir(): void
     {
         $id = $this->idOu404($_POST);

@@ -139,6 +139,23 @@ final class Obrigacao extends Model
         return $stmt->rowCount() === 1;
     }
 
+    /**
+     * Desfaz o pagamento (ex.: o cliente marcou por engano). Status e data
+     * mudam JUNTOS, então o CHECK ck_obrigacoes_pagto continua satisfeito.
+     * Mesma ideia do marcarPaga: a condição no próprio UPDATE evita corrida.
+     *
+     * @return bool false se ela não estava paga
+     */
+    public function reabrir(int $id): bool
+    {
+        $stmt = $this->db->prepare(
+            "UPDATE obrigacoes SET status = 'pendente', pago_em = NULL WHERE id = ? AND status = 'paga'"
+        );
+        $stmt->execute([$id]);
+
+        return $stmt->rowCount() === 1;
+    }
+
     /** Documentos ligados são removidos pelo banco (ON DELETE CASCADE). */
     public function excluir(int $id): void
     {

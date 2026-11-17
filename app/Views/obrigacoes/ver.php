@@ -80,6 +80,16 @@ use App\Services\Semaforo;
                 <span class="small text-muted ms-2">Anexe o comprovante abaixo para o escritório conferir.</span>
             </form>
         </div>
+    <?php elseif ($ehContador): ?>
+        <div class="card-footer bg-white">
+            <form method="post" action="<?= e(url('obrigacoes/reabrir')) ?>" class="m-0"
+                  onsubmit="return confirm('Reabrir esta guia? Ela volta a pendente e o semáforo é recalculado.');">
+                <?= csrf_campo() ?>
+                <input type="hidden" name="id" value="<?= e($obrigacao['id']) ?>">
+                <button type="submit" class="btn btn-outline-secondary">↺ Reabrir guia</button>
+                <span class="small text-muted ms-2">Use se a guia foi marcada como paga por engano.</span>
+            </form>
+        </div>
     <?php endif; ?>
 </div>
 
