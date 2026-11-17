@@ -133,6 +133,44 @@ final class WhatsAppLinkTest extends TestCase
         $this->assertStringContainsString('%0A', $link);       // quebra de linha
     }
 
+    // ------------------------------------------------------------------
+    // Resumo por empresa (ranking do painel)
+    // ------------------------------------------------------------------
+
+    /** @return array<string, mixed> empresa como vem do ranking */
+    private static function empresa(array $alterar = []): array
+    {
+        return $alterar + ['razao_social' => 'Padaria Pão Quente Ltda', 'nome_fantasia' => 'Pão Quente', 'whatsapp' => '86999990001'];
+    }
+
+    public function testResumoTemEmpresaQuantidadeETotal(): void
+    {
+        $mensagem = WhatsAppLink::mensagemResumo(self::empresa(), 3, '9213.55');
+
+        $this->assertStringContainsString('*Pão Quente*', $mensagem);
+        $this->assertStringContainsString('3 guias vencidas', $mensagem);
+        $this->assertStringContainsString('R$ 9.213,55', $mensagem);
+    }
+
+    public function testResumoNoSingularParaUmaGuia(): void
+    {
+        $this->assertStringContainsString('1 guia vencida,', WhatsAppLink::mensagemResumo(self::empresa(), 1, '387.40'));
+    }
+
+    public function testLinkDoResumoCodificaAMensagem(): void
+    {
+        $link = WhatsAppLink::paraResumo(self::empresa(), 2, '100.00');
+        $prefixo = 'https://wa.me/5586999990001?text=';
+
+        $this->assertStringStartsWith($prefixo, $link);
+        $this->assertSame(WhatsAppLink::mensagemResumo(self::empresa(), 2, '100.00'), rawurldecode(substr($link, strlen($prefixo))));
+    }
+
+    public function testResumoSemNumeroNaoGeraLink(): void
+    {
+        $this->assertNull(WhatsAppLink::paraResumo(self::empresa(['whatsapp' => null]), 2, '100.00'));
+    }
+
     public function testSemNumeroValidoNaoGeraLink(): void
     {
         $this->assertNull(WhatsAppLink::paraObrigacao(self::obrigacao(['whatsapp' => null]), self::hoje()));

@@ -10,9 +10,9 @@ use App\Models\Empresa;
 use App\Models\Painel;
 
 /**
- * Painel inicial: indicadores de prazos e as próximas guias a vencer.
- * Contador vê o escritório inteiro; cliente vê só a própria empresa
- * (empresa vinda da sessão, como na listagem de obrigações).
+ * Painel inicial: indicadores, gráficos e as próximas guias a vencer.
+ * Contador vê o escritório inteiro (e o ranking de empresas); cliente vê
+ * só a própria empresa (empresa vinda da sessão) e não vê o ranking.
  */
 final class PainelController extends Controller
 {
@@ -27,6 +27,9 @@ final class PainelController extends Controller
             'ehContador'  => $ehContador,
             'empresa'     => $empresaId === null ? null : (new Empresa())->buscar($empresaId),
             'indicadores' => $painel->indicadores($empresaId),
+            'situacoes'   => $painel->porSituacao($empresaId),
+            'ranking'     => $ehContador ? $painel->rankingVencidas() : [],
+            'semanas'     => $painel->vencimentosPorSemana($empresaId),
             'proximas'    => $painel->proximas($empresaId),
         ]);
     }

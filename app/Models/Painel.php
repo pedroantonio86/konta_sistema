@@ -21,12 +21,13 @@ final class Painel extends Model
     /**
      * Uma única consulta: cada indicador é uma soma condicional.
      *
-     * @return array{vencidas: int, valor_vencido: string, a_vencer: int, valor_a_vencer: string, pagas_mes: int, total_pendente: string}
+     * @return array{vencidas: int, valor_vencido: string, a_vencer: int, valor_a_vencer: string, pagas_mes: int, valor_pago_mes: string, total_pendente: string}
      */
     public function indicadores(?int $empresaId): array
     {
         $vencida = Semaforo::condicaoSql(Semaforo::VENCIDA);
         $alerta = Semaforo::condicaoSql(Semaforo::ALERTA);
+        $pagaNoMes = "o.status = 'paga' AND o.pago_em >= DATE_FORMAT(CURDATE(), '%Y-%m-01')";
         [$where, $params] = self::filtroEmpresa($empresaId);
 
         $stmt = $this->db->prepare(
@@ -35,8 +36,8 @@ final class Painel extends Model
                 COALESCE(SUM(CASE WHEN {$vencida} THEN o.valor END), 0)        AS valor_vencido,
                 COALESCE(SUM({$alerta}), 0)                                    AS a_vencer,
                 COALESCE(SUM(CASE WHEN {$alerta} THEN o.valor END), 0)         AS valor_a_vencer,
-                COALESCE(SUM(o.status = 'paga'
-                    AND o.pago_em >= DATE_FORMAT(CURDATE(), '%Y-%m-01')), 0)   AS pagas_mes,
+                COALESCE(SUM({$pagaNoMes}), 0)                                 AS pagas_mes,
+                COALESCE(SUM(CASE WHEN {$pagaNoMes} THEN o.valor END), 0)      AS valor_pago_mes,
                 COALESCE(SUM(CASE WHEN o.status = 'pendente' THEN o.valor END), 0) AS total_pendente
                FROM obrigacoes o {$where}"
         );
@@ -49,6 +50,7 @@ final class Painel extends Model
             'a_vencer'       => (int) $linha['a_vencer'],
             'valor_a_vencer' => (string) $linha['valor_a_vencer'],
             'pagas_mes'      => (int) $linha['pagas_mes'],
+            'valor_pago_mes' => (string) $linha['valor_pago_mes'],
             'total_pendente' => (string) $linha['total_pendente'],
         ];
     }
@@ -75,6 +77,90 @@ final class Painel extends Model
         $stmt->execute($params);
 
         return $stmt->fetchAll();
+    }
+
+    /**
+     * Quantas obrigações há em cada situação do semáforo (barra empilhada).
+     * Cada contagem usa a condição SQL do próprio Semaforo.
+     *
+     * @return array<string, int> situação => quantidade, na ordem do Semaforo
+     */
+    public function porSituacao(?int $empresaId): array
+    {
+        $colunas = [];
+        foreach (array_keys(Semaforo::opcoes()) as $situacao) {
+            // $situacao é uma das 4 constantes do Semaforo: nunca texto do usuário
+            $colunas[] = 'COALESCE(SUM(' . Semaforo::condicaoSql($situacao) . "), 0) AS {$situacao}";
+        }
+        [$where, $params] = self::filtroEmpresa($empresaId);
+
+        $stmt = $this->db->prepare('SELECT ' . implode(', ', $colunas) . " FROM obrigacoes o {$where}");
+        $stmt->execute($params);
+
+        return array_map('intval', $stmt->fetch());
+    }
+
+    /**
+     * As empresas com maior valor vencido (só o contador vê).
+     *
+     * @return list<array{id: int, razao_social: string, nome_fantasia: ?string, whatsapp: ?string, guias: int, valor: string}>
+     */
+    public function rankingVencidas(int $limite = 5): array
+    {
+        $vencida = Semaforo::condicaoSql(Semaforo::VENCIDA);
+
+        $stmt = $this->db->prepare(
+            "SELECT e.id, e.razao_social, e.nome_fantasia, e.whatsapp,
+                    COUNT(*) AS guias, SUM(o.valor) AS valor
+               FROM obrigacoes o
+               JOIN empresas e ON e.id = o.empresa_id
+              WHERE {$vencida}
+              GROUP BY e.id, e.razao_social, e.nome_fantasia, e.whatsapp
+              ORDER BY valor DESC, guias DESC
+              LIMIT :limite"
+        );
+        $stmt->bindValue(':limite', $limite, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        return array_map(static fn (array $l): array => ['guias' => (int) $l['guias']] + $l, $stmt->fetchAll());
+    }
+
+    public const SEMANAS = 4;
+
+    /**
+     * Valor pendente que vence em cada uma das próximas 4 semanas
+     * (semana 1 = hoje até hoje + 6). Semanas sem guia aparecem com zero.
+     *
+     * @return list<array{rotulo: string, valor: float, guias: int}>
+     */
+    public function vencimentosPorSemana(?int $empresaId): array
+    {
+        [$where, $params] = self::filtroEmpresa($empresaId);
+        $where .= ($where === '' ? 'WHERE' : ' AND')
+            . " o.status = 'pendente' AND o.vencimento BETWEEN CURDATE() AND CURDATE() + INTERVAL "
+            . (self::SEMANAS * 7 - 1) . ' DAY';
+
+        $stmt = $this->db->prepare(
+            "SELECT FLOOR(DATEDIFF(o.vencimento, CURDATE()) / 7) AS semana,
+                    SUM(o.valor) AS valor, COUNT(*) AS guias
+               FROM obrigacoes o {$where}
+              GROUP BY semana"
+        );
+        $stmt->execute($params);
+        $porSemana = array_column($stmt->fetchAll(), null, 'semana');
+
+        $hoje = new \DateTimeImmutable('today');
+        $semanas = [];
+        for ($i = 0; $i < self::SEMANAS; $i++) {
+            $inicio = $hoje->modify('+' . ($i * 7) . ' days');
+            $semanas[] = [
+                'rotulo' => $inicio->format('d/m') . '–' . $inicio->modify('+6 days')->format('d/m'),
+                'valor'  => (float) ($porSemana[$i]['valor'] ?? 0),
+                'guias'  => (int) ($porSemana[$i]['guias'] ?? 0),
+            ];
+        }
+
+        return $semanas;
     }
 
     /** @return array{0: string, 1: array<string, int>} */

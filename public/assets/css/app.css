@@ -10,3 +10,16 @@
 
 /* Guia paga fica "apagada" na listagem: o que importa é o que falta pagar. */
 tr.semaforo-paga > td { color: var(--bs-secondary-color); }
+
+/*
+ * Painel: barra de situação (progress-stacked do Bootstrap).
+ * Blocos separados por 2px de espaço (sem borda) e cantos de 4px;
+ * 28px de altura para o número caber dentro do bloco.
+ */
+.barra-situacao { gap: 2px; height: 28px; background: transparent; }
+.barra-situacao > .progress { height: 28px; border-radius: 4px; overflow: hidden; }
+.barra-situacao .progress-bar { font-size: .8125rem; font-weight: 600; }
+.legenda-cor { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; }
+
+/* Altura fixa do gráfico de semanas, já contando os rótulos do eixo. */
+.grafico-semanas { position: relative; height: 220px; }

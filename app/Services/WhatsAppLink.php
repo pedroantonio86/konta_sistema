@@ -39,6 +39,37 @@ final class WhatsAppLink
         return self::BASE . $numero . '?text=' . rawurlencode(self::mensagem($obrigacao, $hoje));
     }
 
+    /**
+     * Link de cobrança de uma EMPRESA (ranking do painel): uma mensagem com
+     * o total vencido, em vez de uma por guia.
+     *
+     * @param array<string, mixed> $empresa razao_social, nome_fantasia, whatsapp
+     * @param string               $total   valor vindo do banco ('9213.55')
+     */
+    public static function paraResumo(array $empresa, int $guias, string $total): ?string
+    {
+        $numero = self::numero($empresa['whatsapp'] ?? null);
+
+        return $numero === null
+            ? null
+            : self::BASE . $numero . '?text=' . rawurlencode(self::mensagemResumo($empresa, $guias, $total));
+    }
+
+    /** @param array<string, mixed> $empresa */
+    public static function mensagemResumo(array $empresa, int $guias, string $total): string
+    {
+        $nome = $empresa['nome_fantasia'] ?? $empresa['razao_social'];
+        $quantidade = $guias === 1 ? '1 guia vencida' : "{$guias} guias vencidas";
+
+        return implode("\n", [
+            "Olá, *{$nome}*!",
+            "Lembrete do seu escritório de contabilidade: há {$quantidade}, somando R$ "
+                . number_format((float) $total, 2, ',', '.') . '.',
+            '',
+            'Os detalhes estão no Konta. Se já pagou, é só anexar o comprovante lá. Obrigado!',
+        ]);
+    }
+
     /** '(86) 99999-0001' -> '5586999990001'; inválido ou vazio -> null. */
     public static function numero(?string $telefone): ?string
     {
