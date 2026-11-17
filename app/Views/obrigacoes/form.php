@@ -58,7 +58,8 @@ $editando = $id !== null;
 
         <div class="col-md-3">
             <label for="valor" class="form-label">Valor (R$) *</label>
-            <input type="text" id="valor" name="valor" inputmode="decimal" required placeholder="0,00"
+            <input type="text" id="valor" name="valor" inputmode="numeric" required placeholder="0,00"
+                   data-mascara="valor" autocomplete="off"
                    class="form-control<?= classe_invalido($erros, 'valor') ?>"
                    value="<?= e($dados['valor']) ?>">
             <?= erro_campo($erros, 'valor') ?>
