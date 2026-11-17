@@ -10,6 +10,7 @@ use App\Core\Paginacao;
 use App\Core\Validator;
 use App\Models\Documento;
 use App\Models\Empresa;
+use App\Models\Historico;
 use App\Models\Obrigacao;
 use App\Services\Agenda;
 use App\Services\Planilha;
@@ -115,6 +116,7 @@ final class ObrigacaoController extends Controller
             'situacao'   => Semaforo::calcular($obrigacao['status'], $obrigacao['vencimento']),
             'ehContador' => Auth::ehContador(),
             'documentos' => (new Documento())->listarPorObrigacao((int) $obrigacao['id']),
+            'historico'  => (new Historico())->listarPorObrigacao((int) $obrigacao['id']),
         ]);
     }
 
@@ -138,6 +140,7 @@ final class ObrigacaoController extends Controller
         }
 
         $id = $this->obrigacoes->criar($dados);
+        $this->registrarHistorico($id, Historico::CRIADA);
         $this->flash('success', 'Obrigação cadastrada.');
         $this->redirect('obrigacoes/ver', ['id' => $id]);
     }
@@ -159,7 +162,7 @@ final class ObrigacaoController extends Controller
     public function atualizar(): void
     {
         $id = $this->idOu404($_POST);
-        $this->buscarOu404($id);
+        $antes = $this->buscarOu404($id);
 
         $dados = Validator::limpar($_POST, self::CAMPOS);
         $v = $this->validar($dados, $id);
@@ -170,6 +173,7 @@ final class ObrigacaoController extends Controller
         }
 
         $this->obrigacoes->atualizar($id, $dados);
+        $this->registrarHistorico($id, Historico::EDITADA, $this->descreverAlteracoes($antes, $dados));
         $this->flash('success', 'Obrigação atualizada.');
         $this->redirect('obrigacoes/ver', ['id' => $id]);
     }
@@ -184,6 +188,7 @@ final class ObrigacaoController extends Controller
         $nome = Obrigacao::TIPOS[$obrigacao['tipo']] . ' ' . competencia_br($obrigacao['competencia']);
 
         if ($this->obrigacoes->marcarPaga($id)) {
+            $this->registrarHistorico($id, Historico::PAGA);
             $this->flash('success', "{$nome} marcada como paga.");
         } else {
             $this->flash('warning', "{$nome} já estava paga.");
@@ -199,6 +204,7 @@ final class ObrigacaoController extends Controller
         $obrigacao = $this->buscarOu404($id);
 
         if ($this->obrigacoes->reabrir($id)) {
+            $this->registrarHistorico($id, Historico::REABERTA, 'estava paga desde ' . data_br($obrigacao['pago_em']));
             $this->flash('success', sprintf(
                 '%s %s reaberta: voltou a pendente.',
                 Obrigacao::TIPOS[$obrigacao['tipo']],
@@ -306,6 +312,51 @@ final class ObrigacaoController extends Controller
     }
 
     /** @return array<string, mixed> */
+    private function registrarHistorico(int $obrigacaoId, string $acao, ?string $detalhe = null): void
+    {
+        (new Historico())->registrar($obrigacaoId, Auth::usuario()['id'], $acao, $detalhe);
+    }
+
+    /**
+     * O que mudou numa edição, em texto curto para o histórico:
+     * "valor: R$ 950,00 → R$ 980,15; vencimento: 20/11/2026 → 23/11/2026".
+     *
+     * @param array<string, mixed>  $antes linha do banco antes da edição
+     * @param array<string, string> $dados formulário já validado
+     */
+    private function descreverAlteracoes(array $antes, array $dados): ?string
+    {
+        $depois = [
+            'empresa'     => (int) $dados['empresa_id'],
+            'tipo'        => Obrigacao::TIPOS[$dados['tipo']],
+            'competência' => competencia_br($dados['competencia'] . '-01'),
+            'valor'       => moeda(Validator::normalizarValor($dados['valor'])),
+            'vencimento'  => data_br($dados['vencimento']),
+            'observação'  => $dados['observacao'],
+        ];
+        $antigo = [
+            'empresa'     => (int) $antes['empresa_id'],
+            'tipo'        => Obrigacao::TIPOS[$antes['tipo']],
+            'competência' => competencia_br($antes['competencia']),
+            'valor'       => moeda($antes['valor']),
+            'vencimento'  => data_br($antes['vencimento']),
+            'observação'  => (string) $antes['observacao'],
+        ];
+
+        $mudancas = [];
+        foreach ($depois as $campo => $valor) {
+            if ($valor === $antigo[$campo]) {
+                continue;
+            }
+            // Empresa e observação: só avisa que mudou (texto longo ou id sem nome).
+            $mudancas[] = in_array($campo, ['empresa', 'observação'], true)
+                ? "{$campo} alterada"
+                : "{$campo}: {$antigo[$campo]} → {$valor}";
+        }
+
+        return $mudancas === [] ? 'sem alterações' : implode('; ', $mudancas);
+    }
+
     private function buscarOu404(int $id): array
     {
         return $this->obrigacoes->buscar($id) ?? $this->naoEncontrado();

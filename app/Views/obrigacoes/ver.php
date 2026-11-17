@@ -5,6 +5,7 @@
  * @var string               $titulo
  * @var bool                 $ehContador
  * @var list<array<string, mixed>> $documentos
+ * @var list<array<string, mixed>> $historico  mais recentes primeiro
  */
 use App\Models\Obrigacao;
 use App\Services\Semaforo;
@@ -125,5 +126,28 @@ use App\Services\Semaforo;
                    accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" aria-label="Arquivo">
             <button type="submit" class="btn btn-primary">Enviar</button>
         </form>
+    </div>
+</div>
+
+<div class="card shadow-sm mt-4" id="historico">
+    <div class="card-body">
+        <h2 class="h5">Histórico</h2>
+        <?php if ($historico === []): ?>
+            <p class="small text-muted mb-0">Nenhuma ação registrada.</p>
+        <?php else: ?>
+            <ol class="list-unstyled mb-0 linha-do-tempo">
+                <?php foreach ($historico as $h): ?>
+                    <li class="acao-<?= e($h['acao']) ?>">
+                        <strong><?= e(\App\Models\Historico::ROTULOS[$h['acao']] ?? $h['acao']) ?></strong>
+                        por <?= e($h['nome'] ?? 'usuário removido') ?>
+                        <?php if ($h['perfil'] !== null): ?><span class="badge text-bg-light border"><?= e($h['perfil']) ?></span><?php endif; ?>
+                        em <?= e(date('d/m/Y H:i', (int) strtotime($h['criado_em']))) ?>
+                        <?php if ($h['detalhe'] !== null): ?>
+                            <div class="small text-muted"><?= e($h['detalhe']) ?></div>
+                        <?php endif; ?>
+                    </li>
+                <?php endforeach; ?>
+            </ol>
+        <?php endif; ?>
     </div>
 </div>

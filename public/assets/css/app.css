@@ -23,3 +23,15 @@ tr.semaforo-paga > td { color: var(--bs-secondary-color); }
 
 /* Altura fixa do gráfico de semanas, já contando os rótulos do eixo. */
 .grafico-semanas { position: relative; height: 220px; }
+
+/* Histórico da guia: linha do tempo com um ponto por ação. Cinza por padrão
+   (inclusive "paga", como no semáforo); reaberta em amarelo, documento em azul. */
+.linha-do-tempo { border-left: 2px solid var(--bs-border-color); padding-left: 1rem; }
+.linha-do-tempo > li { position: relative; padding-bottom: .75rem; }
+.linha-do-tempo > li:last-child { padding-bottom: 0; }
+.linha-do-tempo > li::before {
+    content: ""; position: absolute; left: calc(-1rem - 6px); top: .45rem;
+    width: 10px; height: 10px; border-radius: 50%; background: var(--bs-secondary);
+}
+.linha-do-tempo > li.acao-reaberta::before { background: var(--bs-warning); }
+.linha-do-tempo > li.acao-documento::before { background: var(--bs-primary); }
