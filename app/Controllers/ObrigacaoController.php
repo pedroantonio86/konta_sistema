@@ -11,6 +11,7 @@ use App\Core\Validator;
 use App\Models\Documento;
 use App\Models\Empresa;
 use App\Models\Obrigacao;
+use App\Services\Agenda;
 use App\Services\Planilha;
 use App\Services\Semaforo;
 use App\Services\Upload;
@@ -80,6 +81,26 @@ final class ObrigacaoController extends Controller
             ], $obrigacoes)
         );
         fclose($saida);
+        exit;
+    }
+
+    /**
+     * Baixa um .ics com as guias PENDENTES dos filtros atuais, para importar
+     * na agenda do celular. Mesmos filtros e mesmo escopo da planilha.
+     */
+    public function agenda(): void
+    {
+        [$filtros] = $this->filtrosDoUsuario();
+        $pendentes = array_values(array_filter(
+            $this->obrigacoes->listarTodas($filtros),
+            static fn (array $o): bool => $o['status'] === 'pendente'
+        ));
+
+        header('Content-Type: text/calendar; charset=utf-8');
+        header('Content-Disposition: attachment; filename="konta-vencimentos.ics"');
+        header('Cache-Control: private, no-store');
+
+        echo Agenda::gerar($pendentes, new \DateTimeImmutable());
         exit;
     }
 

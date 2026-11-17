@@ -18,6 +18,8 @@ $temFiltro = $filtrosLink !== [];
         <?php if ($obrigacoes !== []): ?>
             <a class="btn btn-outline-secondary" href="<?= e(url('obrigacoes/exportar', $filtrosLink)) ?>"
                title="Baixa em CSV o que está filtrado, sem paginação">Exportar planilha</a>
+            <a class="btn btn-outline-secondary" href="<?= e(url('obrigacoes/agenda', $filtrosLink)) ?>"
+               title="Baixa um arquivo .ics com os vencimentos pendentes filtrados, com lembrete 3 dias antes">Adicionar à agenda</a>
         <?php endif; ?>
         <?php if ($ehContador): ?>
             <a class="btn btn-primary" href="<?= e(url('obrigacoes/criar')) ?>">+ Nova obrigação</a>
