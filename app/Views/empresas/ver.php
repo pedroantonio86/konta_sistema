@@ -21,12 +21,12 @@ use App\Models\Empresa;
         <span class="text-muted"><?= e(cnpj_formatado($empresa['cnpj'])) ?></span>
     </div>
     <div class="d-flex gap-2">
-        <a class="btn btn-outline-primary" href="<?= e(url('empresas/editar', ['id' => $empresa['id']])) ?>">Editar</a>
+        <a class="btn btn-outline-primary" href="<?= e(url('empresas/editar', ['id' => $empresa['id']])) ?>"><?= icone('pencil') ?>Editar</a>
         <form method="post" action="<?= e(url('empresas/excluir')) ?>" class="m-0"
               onsubmit="return confirm('Excluir esta empresa e os logins de cliente dela?');">
             <?= csrf_campo() ?>
             <input type="hidden" name="id" value="<?= e($empresa['id']) ?>">
-            <button type="submit" class="btn btn-outline-danger">Excluir</button>
+            <button type="submit" class="btn btn-outline-danger"><?= icone('trash') ?>Excluir</button>
         </form>
     </div>
 </div>
@@ -99,7 +99,7 @@ use App\Models\Empresa;
                 <div class="form-text">Mínimo de 8 caracteres.</div>
             </div>
             <div class="col-md-1 d-grid" style="margin-top: 1.9rem;">
-                <button type="submit" class="btn btn-primary">Criar</button>
+                <button type="submit" class="btn btn-primary"><?= icone('plus-lg') ?>Criar</button>
             </div>
         </form>
     </div>

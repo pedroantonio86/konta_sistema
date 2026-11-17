@@ -17,12 +17,12 @@ $temFiltro = $filtrosLink !== [];
     <div class="d-flex gap-2">
         <?php if ($obrigacoes !== []): ?>
             <a class="btn btn-outline-secondary" href="<?= e(url('obrigacoes/exportar', $filtrosLink)) ?>"
-               title="Baixa em CSV o que está filtrado, sem paginação">Exportar planilha</a>
+               title="Baixa em CSV o que está filtrado, sem paginação"><?= icone('download') ?>Exportar planilha</a>
             <a class="btn btn-outline-secondary" href="<?= e(url('obrigacoes/agenda', $filtrosLink)) ?>"
-               title="Baixa um arquivo .ics com os vencimentos pendentes filtrados, com lembrete 3 dias antes">Adicionar à agenda</a>
+               title="Baixa um arquivo .ics com os vencimentos pendentes filtrados, com lembrete 3 dias antes"><?= icone('calendar-event') ?>Adicionar à agenda</a>
         <?php endif; ?>
         <?php if ($ehContador): ?>
-            <a class="btn btn-primary" href="<?= e(url('obrigacoes/criar')) ?>">+ Nova obrigação</a>
+            <a class="btn btn-primary" href="<?= e(url('obrigacoes/criar')) ?>"><?= icone('plus-lg') ?>Nova obrigação</a>
         <?php endif; ?>
     </div>
 </div>
@@ -79,8 +79,8 @@ $temFiltro = $filtrosLink !== [];
 </form>
 
 <?php if ($obrigacoes === []): ?>
-    <div class="alert alert-light border">
-        <?= $temFiltro ? 'Nenhuma obrigação encontrada com esses filtros.' : 'Nenhuma obrigação cadastrada ainda.' ?>
+    <div class="card shadow-sm">
+        <?= $temFiltro ? estado_vazio('search', 'Nenhuma obrigação encontrada com esses filtros.') : estado_vazio('inbox', 'Nenhuma obrigação cadastrada ainda.') ?>
     </div>
 <?php else: ?>
     <div class="table-responsive">
@@ -116,7 +116,7 @@ $temFiltro = $filtrosLink !== [];
                     <td class="text-end text-nowrap">
                         <a class="btn btn-sm btn-outline-secondary" href="<?= e(url('obrigacoes/ver', ['id' => $o['id']])) ?>">Ver</a>
                         <?php if ($ehContador): ?>
-                            <a class="btn btn-sm btn-outline-primary" href="<?= e(url('obrigacoes/editar', ['id' => $o['id']])) ?>">Editar</a>
+                            <a class="btn btn-sm btn-outline-primary" href="<?= e(url('obrigacoes/editar', ['id' => $o['id']])) ?>"><?= icone('pencil') ?>Editar</a>
                             <?php if ($situacao !== Semaforo::PAGA): ?>
                                 <?= botao_whatsapp($o, 'sm') ?>
                             <?php endif; ?>

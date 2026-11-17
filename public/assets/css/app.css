@@ -1,8 +1,158 @@
 /*
- * Konta: complementos ao Bootstrap.
- * Semáforo: faixa colorida à esquerda da linha/cartão da obrigação, com as
- * mesmas cores dos selos (vermelho, amarelo, verde e cinza para paga).
+ * Konta: identidade visual e complementos ao Bootstrap.
+ *
+ * Regras da identidade:
+ * - Cor da marca (#155E75) só em navegação, botões, links e foco.
+ * - Verde, amarelo, vermelho e cinza dos SELOS são do semáforo: a cor da
+ *   marca nunca indica situação de guia.
+ * - Sora 700 só no logo e nos h1; Inter em todo o resto.
+ * - Sem degradês, sem animações, sem sombras fortes. Tudo local (sem internet).
  */
+
+/* ===================================================================
+   Fontes locais (public/assets/fonts, licença SIL OFL 1.1)
+   font-display: swap = o texto aparece na hora com a fonte do sistema e
+   troca quando a fonte carregar (nunca fica uma tela em branco).
+   =================================================================== */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../fonts/inter-400.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('../fonts/inter-600.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Sora';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('../fonts/sora-700.woff2') format('woff2');
+}
+
+/* ===================================================================
+   Variáveis do Bootstrap sobrescritas com a cor da marca
+   =================================================================== */
+:root {
+    --konta-marca: #155E75;
+    --konta-marca-rgb: 21, 94, 117;
+    --konta-marca-escura: #164E63;
+    --konta-marca-escura-rgb: 22, 78, 99;
+    --konta-fundo-suave: #ECFEFF;
+    --konta-borda-suave: #A5F3FC;
+    --konta-linha: #E5E7EB;
+
+    --bs-primary: var(--konta-marca);
+    --bs-primary-rgb: var(--konta-marca-rgb);
+    --bs-primary-text-emphasis: var(--konta-marca-escura);
+    --bs-primary-bg-subtle: var(--konta-fundo-suave);
+    --bs-primary-border-subtle: var(--konta-borda-suave);
+    --bs-link-color: var(--konta-marca);
+    --bs-link-color-rgb: var(--konta-marca-rgb);
+    --bs-link-hover-color: var(--konta-marca-escura);
+    --bs-link-hover-color-rgb: var(--konta-marca-escura-rgb);
+    --bs-focus-ring-color: rgba(21, 94, 117, .25);
+
+    --bs-body-font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --bs-font-sans-serif: var(--bs-body-font-family);
+}
+
+/* Inter 600 no lugar do "negrito" padrão (700), que não está entre as fontes locais. */
+b, strong, .fw-bold, .fw-semibold, th, dt, .badge, .btn, .form-label { font-weight: 600; }
+
+/* Sora 700: SOMENTE no logo e nos h1 das páginas. */
+h1, .logo-texto { font-family: 'Sora', var(--bs-body-font-family); font-weight: 700; }
+
+/* Botões na cor da marca (normal, hover, ativo, desabilitado). */
+.btn-primary {
+    --bs-btn-bg: var(--konta-marca);
+    --bs-btn-border-color: var(--konta-marca);
+    --bs-btn-hover-bg: var(--konta-marca-escura);
+    --bs-btn-hover-border-color: var(--konta-marca-escura);
+    --bs-btn-active-bg: var(--konta-marca-escura);
+    --bs-btn-active-border-color: var(--konta-marca-escura);
+    --bs-btn-disabled-bg: var(--konta-marca);
+    --bs-btn-disabled-border-color: var(--konta-marca);
+    --bs-btn-focus-shadow-rgb: var(--konta-marca-rgb);
+}
+.btn-outline-primary {
+    --bs-btn-color: var(--konta-marca);
+    --bs-btn-border-color: var(--konta-marca);
+    --bs-btn-hover-bg: var(--konta-marca);
+    --bs-btn-hover-border-color: var(--konta-marca);
+    --bs-btn-active-bg: var(--konta-marca-escura);
+    --bs-btn-active-border-color: var(--konta-marca-escura);
+    --bs-btn-disabled-color: var(--konta-marca);
+    --bs-btn-disabled-border-color: var(--konta-marca);
+    --bs-btn-focus-shadow-rgb: var(--konta-marca-rgb);
+}
+
+/* Foco dos campos (o Bootstrap usa um azul fixo aqui, por isso a regra explícita). */
+.form-control:focus, .form-select:focus, .form-check-input:focus {
+    border-color: var(--konta-marca);
+    box-shadow: 0 0 0 .25rem rgba(21, 94, 117, .25);
+}
+
+/* Checkbox e radio marcados. */
+.form-check-input:checked { background-color: var(--konta-marca); border-color: var(--konta-marca); }
+
+/* Paginação: página atual na cor da marca. */
+.pagination {
+    --bs-pagination-color: var(--konta-marca);
+    --bs-pagination-hover-color: var(--konta-marca-escura);
+    --bs-pagination-focus-color: var(--konta-marca-escura);
+    --bs-pagination-focus-box-shadow: 0 0 0 .25rem rgba(21, 94, 117, .25);
+    --bs-pagination-active-bg: var(--konta-marca);
+    --bs-pagination-active-border-color: var(--konta-marca);
+}
+
+/* ===================================================================
+   Logo e barra de navegação
+   =================================================================== */
+.logo { display: inline-flex; align-items: center; gap: .5rem; text-decoration: none; }
+.logo-texto { font-size: 1.375rem; line-height: 1; color: var(--konta-marca); }
+.logo-branco .logo-texto { color: #fff; }
+
+.navbar-konta { background: #fff; border-bottom: 1px solid var(--konta-linha); }
+.navbar-konta .nav-link { color: #374151; font-weight: 600; padding-bottom: .4rem; border-bottom: 2px solid transparent; }
+.navbar-konta .nav-link:hover { color: var(--konta-marca); }
+.navbar-konta .nav-link.active { color: var(--konta-marca); border-bottom-color: var(--konta-marca); }
+
+/* Selo do perfil (contador / cliente) ao lado do nome. */
+.selo-perfil { background: var(--konta-fundo-suave); color: var(--konta-marca-escura); border: 1px solid var(--konta-borda-suave); }
+
+/* ===================================================================
+   Tela de login
+   =================================================================== */
+.login-caixa { max-width: 880px; }
+.login-marca { background: var(--konta-marca); color: #fff; }
+.login-slogan { font-family: 'Sora', var(--bs-body-font-family); font-weight: 700; font-size: 1.75rem; line-height: 1.2; }
+.login-apoio { color: var(--konta-borda-suave); }
+
+/* ===================================================================
+   Componentes
+   =================================================================== */
+
+/* Estado vazio: ícone grande cinza claro + frase amigável. */
+.estado-vazio { text-align: center; padding: 2rem 1rem; color: var(--bs-secondary-color); }
+.estado-vazio .bi { display: block; font-size: 2.5rem; color: #CBD5E1; margin-bottom: .5rem; }
+
+/* Ícone dos cards do painel: na cor do card, discreto. */
+.icone-card { font-size: 1.25rem; opacity: .85; }
+
+/* Ícone ao lado do texto do botão. */
+.btn .bi { margin-right: .35rem; }
+
+/* ===================================================================
+   Semáforo: faixa colorida à esquerda da linha/cartão da obrigação,
+   com as mesmas cores dos selos (vermelho, amarelo, verde e cinza = paga).
+   =================================================================== */
 .semaforo-vencida { border-left: 4px solid var(--bs-danger) !important; }
 .semaforo-alerta  { border-left: 4px solid var(--bs-warning) !important; }
 .semaforo-em_dia  { border-left: 4px solid var(--bs-success) !important; }
@@ -25,7 +175,8 @@ tr.semaforo-paga > td { color: var(--bs-secondary-color); }
 .grafico-semanas { position: relative; height: 220px; }
 
 /* Histórico da guia: linha do tempo com um ponto por ação. Cinza por padrão
-   (inclusive "paga", como no semáforo); reaberta em amarelo, documento em azul. */
+   (inclusive "paga", como no semáforo); documento e reaberta na cor da marca
+   (cheio e vazado), para não confundir com as cores do semáforo. */
 .linha-do-tempo { border-left: 2px solid var(--bs-border-color); padding-left: 1rem; }
 .linha-do-tempo > li { position: relative; padding-bottom: .75rem; }
 .linha-do-tempo > li:last-child { padding-bottom: 0; }
@@ -33,5 +184,5 @@ tr.semaforo-paga > td { color: var(--bs-secondary-color); }
     content: ""; position: absolute; left: calc(-1rem - 6px); top: .45rem;
     width: 10px; height: 10px; border-radius: 50%; background: var(--bs-secondary);
 }
-.linha-do-tempo > li.acao-reaberta::before { background: var(--bs-warning); }
-.linha-do-tempo > li.acao-documento::before { background: var(--bs-primary); }
+.linha-do-tempo > li.acao-documento::before { background: var(--konta-marca); }
+.linha-do-tempo > li.acao-reaberta::before { background: #fff; border: 2px solid var(--konta-marca); }

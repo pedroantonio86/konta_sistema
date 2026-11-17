@@ -1,16 +1,30 @@
 <?php
 /**
+ * Tela de login. Telas médias ou maiores: duas colunas (marca à esquerda,
+ * formulário à direita). Tela pequena: só o formulário, com o logo em cima.
+ * Campos e validação são os mesmos de antes; muda só o visual.
+ *
  * @var array<string, string> $dados
  * @var array<string, string> $erros
  * @var string|null           $erroGeral
  */
 ?>
-<div class="row justify-content-center">
-    <div class="col-sm-10 col-md-6 col-lg-4">
-        <div class="card shadow-sm mt-md-4">
-            <div class="card-body p-4">
+<div class="card shadow-sm overflow-hidden mx-auto login-caixa">
+    <div class="row g-0">
+        <div class="col-md-5 login-marca d-none d-md-flex flex-column justify-content-between p-5">
+            <?= logo_konta(true) ?>
+            <div>
+                <p class="login-slogan mb-3">Nenhuma guia esquecida.</p>
+                <p class="login-apoio mb-0">Prazos, guias e comprovantes do escritório em um só lugar.</p>
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <div class="card-body p-4 p-md-5">
+                <div class="d-md-none mb-4"><?= logo_konta() ?></div>
+
                 <h1 class="h4 mb-1">Entrar no Konta</h1>
-                <p class="text-muted small mb-4">Guias e obrigações fiscais em um só lugar.</p>
+                <p class="text-muted small mb-4">Use o e-mail e a senha que o escritório enviou.</p>
 
                 <?php if ($erroGeral !== null): ?>
                     <div class="alert alert-danger py-2" role="alert"><?= e($erroGeral) ?></div>

@@ -99,16 +99,17 @@ function selo_semaforo(string $situacao): string
 function botao_whatsapp(array $obrigacao, string $tamanho = ''): string
 {
     $link = \App\Services\WhatsAppLink::paraObrigacao($obrigacao);
-    $classe = 'btn btn-success' . ($tamanho !== '' ? ' btn-' . $tamanho : '');
+    // Cor da marca (não verde): verde é exclusivo do semáforo.
+    $classe = 'btn btn-primary' . ($tamanho !== '' ? ' btn-' . $tamanho : '');
 
     if ($link === null) {
         return '<span class="d-inline-block" tabindex="0" title="Empresa sem WhatsApp válido cadastrado">'
-            . '<button type="button" class="' . $classe . '" disabled>Cobrar no WhatsApp</button></span>';
+            . '<button type="button" class="' . $classe . '" disabled>' . icone('whatsapp') . 'Cobrar no WhatsApp</button></span>';
     }
 
     // noopener: a aba do WhatsApp não consegue controlar a aba do Konta.
     return '<a class="' . $classe . '" href="' . e($link) . '" target="_blank" rel="noopener noreferrer">'
-        . 'Cobrar no WhatsApp</a>';
+        . icone('whatsapp') . 'Cobrar no WhatsApp</a>';
 }
 
 /** 348160 -> "340 KB"; 1258291 -> "1,2 MB" */
@@ -119,6 +120,45 @@ function tamanho_arquivo(int|string $bytes): string
     return $bytes >= 1024 * 1024
         ? number_format($bytes / 1024 / 1024, 1, ',', '.') . ' MB'
         : max(1, (int) round($bytes / 1024)) . ' KB';
+}
+
+/**
+ * Ícone do Bootstrap Icons (local). Decorativo: aria-hidden, sempre ao lado
+ * de um texto, então o leitor de tela lê só o texto.
+ */
+function icone(string $nome): string
+{
+    return '<i class="bi bi-' . e($nome) . '" aria-hidden="true"></i>';
+}
+
+/**
+ * Logo do Konta: quadrado com "K" + o nome, em SVG inline (sem arquivo,
+ * sem internet). $branco = versão para fundo na cor da marca (login).
+ */
+function logo_konta(bool $branco = false): string
+{
+    $fundo = $branco ? '#FFFFFF' : '#155E75';
+    $letra = $branco ? '#155E75' : '#FFFFFF';
+
+    return '<span class="logo' . ($branco ? ' logo-branco' : '') . '">'
+        . '<svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false">'
+        . '<rect width="32" height="32" rx="8" fill="' . $fundo . '"/>'
+        . '<text x="16" y="22.8" text-anchor="middle" font-family="Sora, sans-serif" font-weight="700" font-size="19" fill="' . $letra . '">K</text>'
+        . '</svg><span class="logo-texto">Konta</span></span>';
+}
+
+/** Lista vazia: ícone grande cinza claro + frase amigável. */
+function estado_vazio(string $icone, string $frase): string
+{
+    return '<div class="estado-vazio">' . icone($icone) . '<p class="mb-0">' . e($frase) . '</p></div>';
+}
+
+/** Rota da página atual ('obrigacoes/index'), para destacar o item do menu. */
+function rota_atual(): string
+{
+    $url = $_GET['url'] ?? '';
+
+    return \App\Core\Router::normalizar(is_string($url) ? $url : '');
 }
 
 /** Última cobrança em texto: "nunca cobrado", "cobrado hoje", "cobrado ontem", "cobrado há 9 dias". */

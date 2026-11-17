@@ -9,7 +9,7 @@ use App\Models\Empresa;
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="h3 mb-0">Empresas</h1>
-    <a class="btn btn-primary" href="<?= e(url('empresas/criar')) ?>">+ Nova empresa</a>
+    <a class="btn btn-primary" href="<?= e(url('empresas/criar')) ?>"><?= icone('plus-lg') ?>Nova empresa</a>
 </div>
 
 <form method="get" action="<?= e(url()) ?>" class="row g-2 mb-3" role="search">
@@ -27,8 +27,8 @@ use App\Models\Empresa;
 </form>
 
 <?php if ($empresas === []): ?>
-    <div class="alert alert-light border">
-        <?= $busca === '' ? 'Nenhuma empresa cadastrada ainda.' : 'Nenhuma empresa encontrada para "' . e($busca) . '".' ?>
+    <div class="card shadow-sm">
+        <?= $busca === '' ? estado_vazio('building', 'Nenhuma empresa cadastrada ainda.') : estado_vazio('search', 'Nenhuma empresa encontrada com essa busca.') ?>
     </div>
 <?php else: ?>
     <div class="table-responsive">
@@ -58,7 +58,7 @@ use App\Models\Empresa;
                     <td class="d-none d-lg-table-cell text-nowrap"><?= e(telefone_formatado($empresa['whatsapp']) ?: '—') ?></td>
                     <td class="text-end text-nowrap">
                         <a class="btn btn-sm btn-outline-secondary" href="<?= e(url('empresas/ver', ['id' => $empresa['id']])) ?>">Ver</a>
-                        <a class="btn btn-sm btn-outline-primary" href="<?= e(url('empresas/editar', ['id' => $empresa['id']])) ?>">Editar</a>
+                        <a class="btn btn-sm btn-outline-primary" href="<?= e(url('empresas/editar', ['id' => $empresa['id']])) ?>"><?= icone('pencil') ?>Editar</a>
                     </td>
                 </tr>
             <?php endforeach; ?>
