@@ -54,6 +54,7 @@ $usuarioLogado = \App\Core\Auth::usuario();
 </nav>
 
 <main class="container pb-5">
+    <?php if (!empty($avisoCliente)) { require __DIR__ . '/partials/aviso_cliente.php'; } ?>
     <?php foreach (flash_consumir() as $aviso): ?>
         <div class="alert alert-<?= e($aviso['tipo']) ?> alert-dismissible fade show" role="alert">
             <?= e($aviso['mensagem']) ?>
