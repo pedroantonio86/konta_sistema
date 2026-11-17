@@ -15,6 +15,7 @@ SET NAMES utf8mb4;
 SET time_zone = '-03:00';
 
 -- Ordem inversa das dependências (filhas antes das mães) para o DROP funcionar.
+DROP TABLE IF EXISTS cobrancas;
 DROP TABLE IF EXISTS avaliacoes;
 DROP TABLE IF EXISTS documentos;
 DROP TABLE IF EXISTS obrigacoes;
@@ -128,6 +129,25 @@ CREATE TABLE avaliacoes (
     CONSTRAINT ck_avaliacoes_nota CHECK (nota BETWEEN 1 AND 5)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ---------------------------------------------------------------------
+-- cobrancas: registro de cada cobrança feita pela central de cobrança
+-- (para mostrar "cobrado há N dias" e não cobrar duas vezes no mesmo dia).
+-- CASCADE: o registro só faz sentido com a empresa; SET NULL: mantém o
+-- registro mesmo que o usuário que cobrou seja removido.
+-- ---------------------------------------------------------------------
+CREATE TABLE cobrancas (
+    id         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    empresa_id INT UNSIGNED NOT NULL,
+    usuario_id INT UNSIGNED NULL,
+    cobrado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_cobrancas_empresa FOREIGN KEY (empresa_id)
+        REFERENCES empresas (id) ON DELETE CASCADE,
+    CONSTRAINT fk_cobrancas_usuario FOREIGN KEY (usuario_id)
+        REFERENCES usuarios (id) ON DELETE SET NULL,
+    -- "última cobrança de cada empresa": busca por empresa, data mais recente
+    INDEX idx_cobrancas_empresa_data (empresa_id, cobrado_em)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- =====================================================================
 -- DADOS DE EXEMPLO
 -- Datas relativas a CURDATE() para o painel sempre ter números na demo.
@@ -177,3 +197,9 @@ INSERT INTO obrigacoes (empresa_id, tipo, competencia, valor, vencimento, status
 INSERT INTO avaliacoes (usuario_id, nota, comentario) VALUES
  (2, 5, '[Exemplo] Muito mais fácil que a planilha.'),
  (3, 4, '[Exemplo] Gostei do semáforo; queria ver o histórico do ano.');
+
+-- Cobranças de exemplo: a Padaria foi cobrada há 2 dias (e antes, há 9);
+-- JR Reparos e Clínica nunca foram cobradas.
+INSERT INTO cobrancas (empresa_id, usuario_id, cobrado_em) VALUES
+ (1, 1, NOW() - INTERVAL 9 DAY),
+ (1, 1, NOW() - INTERVAL 2 DAY);

@@ -171,6 +171,62 @@ final class WhatsAppLinkTest extends TestCase
         $this->assertNull(WhatsAppLink::paraResumo(self::empresa(['whatsapp' => null]), 2, '100.00'));
     }
 
+    // ------------------------------------------------------------------
+    // Central de cobrança: todas as guias pendentes da empresa numa mensagem
+    // ------------------------------------------------------------------
+
+    /** @return list<array<string, mixed>> */
+    private static function guiasDaPadaria(): array
+    {
+        return [
+            ['tipo' => 'DAS', 'competencia' => '2026-10-01', 'valor' => '387.40', 'vencimento' => '2026-11-10'],
+            ['tipo' => 'FGTS', 'competencia' => '2026-10-01', 'valor' => '1250.00', 'vencimento' => '2026-11-15'],
+            ['tipo' => 'DCTFWEB', 'competencia' => '2026-10-01', 'valor' => '0.00', 'vencimento' => '2026-11-19'],
+        ];
+    }
+
+    public function testCobrancaListaCadaGuiaComTipoCompetenciaValorEVencimento(): void
+    {
+        $mensagem = WhatsAppLink::mensagemCobranca(self::empresa(), self::guiasDaPadaria(), self::hoje());
+
+        $this->assertStringContainsString('*Pão Quente*', $mensagem);
+        $this->assertStringContainsString('• DAS 10/2026 · R$ 387,40 · vence 10/11/2026 (venceu há 3 dias)', $mensagem);
+        $this->assertStringContainsString('• FGTS 10/2026 · R$ 1.250,00 · vence 15/11/2026 (vence em 2 dias)', $mensagem);
+        $this->assertStringContainsString('• DCTFWeb 10/2026 · sem valor a pagar · vence 19/11/2026', $mensagem);
+    }
+
+    public function testCobrancaMostraQuantidadeETotal(): void
+    {
+        $mensagem = WhatsAppLink::mensagemCobranca(self::empresa(), self::guiasDaPadaria(), self::hoje());
+
+        $this->assertStringContainsString('3 guias pendentes', $mensagem);
+        $this->assertStringContainsString('Total: R$ 1.637,40', $mensagem);
+    }
+
+    public function testCobrancaDeUmaGuiaNoSingular(): void
+    {
+        $mensagem = WhatsAppLink::mensagemCobranca(self::empresa(), [self::guiasDaPadaria()[0]], self::hoje());
+
+        $this->assertStringContainsString('1 guia pendente:', $mensagem);
+    }
+
+    public function testLinkDaCobrancaCodificaAMensagemInteira(): void
+    {
+        $link = WhatsAppLink::paraCobranca(self::empresa(), self::guiasDaPadaria(), self::hoje());
+        $prefixo = 'https://wa.me/5586999990001?text=';
+
+        $this->assertStringStartsWith($prefixo, $link);
+        $this->assertSame(
+            WhatsAppLink::mensagemCobranca(self::empresa(), self::guiasDaPadaria(), self::hoje()),
+            rawurldecode(substr($link, strlen($prefixo)))
+        );
+    }
+
+    public function testCobrancaSemNumeroNaoGeraLink(): void
+    {
+        $this->assertNull(WhatsAppLink::paraCobranca(self::empresa(['whatsapp' => '123']), self::guiasDaPadaria(), self::hoje()));
+    }
+
     public function testSemNumeroValidoNaoGeraLink(): void
     {
         $this->assertNull(WhatsAppLink::paraObrigacao(self::obrigacao(['whatsapp' => null]), self::hoje()));

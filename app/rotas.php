@@ -11,6 +11,7 @@ declare(strict_types=1);
 use App\Controllers\AuthController;
 use App\Controllers\AvaliacaoController;
 use App\Controllers\AvisoController;
+use App\Controllers\CobrancaController;
 use App\Controllers\DocumentoController;
 use App\Controllers\EmpresaController;
 use App\Controllers\ObrigacaoController;
@@ -36,6 +37,7 @@ return [
         'obrigacoes/ver'    => [ObrigacaoController::class, 'ver', $logados],
         'obrigacoes/exportar' => [ObrigacaoController::class, 'exportar', $logados],
         'obrigacoes/agenda'   => [ObrigacaoController::class, 'agenda', $logados],
+        'obrigacoes/cobranca' => [CobrancaController::class, 'index', $contador],
         'obrigacoes/criar'  => [ObrigacaoController::class, 'criar', $contador],
         'obrigacoes/editar' => [ObrigacaoController::class, 'editar', $contador],
 
@@ -58,6 +60,7 @@ return [
         'obrigacoes/excluir'   => [ObrigacaoController::class, 'excluir', $contador],
         'obrigacoes/pagar'     => [ObrigacaoController::class, 'pagar', $logados],
         'obrigacoes/reabrir'   => [ObrigacaoController::class, 'reabrir', $contador],
+        'obrigacoes/cobrar'    => [CobrancaController::class, 'cobrar', $contador],
 
         'documentos/enviar'    => [DocumentoController::class, 'enviar', $logados],
 

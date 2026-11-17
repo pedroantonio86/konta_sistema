@@ -92,7 +92,10 @@ $valorSemanas = array_sum(array_column($semanas, 'valor'));
         <div class="col-lg-5">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
-                    <h2 class="h6">Empresas com mais valor vencido</h2>
+                    <div class="d-flex justify-content-between align-items-baseline">
+                        <h2 class="h6">Empresas com mais valor vencido</h2>
+                        <a class="small" href="<?= e(url('obrigacoes/cobranca')) ?>">Central de cobrança →</a>
+                    </div>
                     <?php if ($ranking === []): ?>
                         <p class="text-muted mb-0">Nenhuma guia vencida. 🎉</p>
                     <?php else: ?>

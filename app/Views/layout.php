@@ -33,6 +33,7 @@ $usuarioLogado = \App\Core\Auth::usuario();
                     <li class="nav-item"><a class="nav-link" href="<?= e(url('painel/index')) ?>">Painel</a></li>
                     <li class="nav-item"><a class="nav-link" href="<?= e(url('obrigacoes/index')) ?>">Obrigações</a></li>
                     <?php if ($usuarioLogado['perfil'] === \App\Core\Auth::CONTADOR): ?>
+                        <li class="nav-item"><a class="nav-link" href="<?= e(url('obrigacoes/cobranca')) ?>">Cobrança</a></li>
                         <li class="nav-item"><a class="nav-link" href="<?= e(url('empresas/index')) ?>">Empresas</a></li>
                         <li class="nav-item"><a class="nav-link" href="<?= e(url('avaliacoes/index')) ?>">Avaliações</a></li>
                     <?php else: ?>
