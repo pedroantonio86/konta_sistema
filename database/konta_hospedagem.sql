@@ -10,6 +10,7 @@ SET NAMES utf8mb4;
 SET time_zone = '-03:00';
 
 -- Ordem inversa das dependências (filhas antes das mães) para o DROP funcionar.
+DROP TABLE IF EXISTS historico;
 DROP TABLE IF EXISTS cobrancas;
 DROP TABLE IF EXISTS avaliacoes;
 DROP TABLE IF EXISTS documentos;
@@ -143,6 +144,26 @@ CREATE TABLE cobrancas (
     INDEX idx_cobrancas_empresa_data (empresa_id, cobrado_em)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ---------------------------------------------------------------------
+-- historico: linha do tempo de cada guia (quem fez o quê e quando).
+-- CASCADE: o histórico some junto com a guia; SET NULL: a ação continua
+-- registrada mesmo que o usuário seja removido.
+-- ---------------------------------------------------------------------
+CREATE TABLE historico (
+    id           INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    obrigacao_id INT UNSIGNED NOT NULL,
+    usuario_id   INT UNSIGNED NULL,
+    acao         ENUM('criada','editada','paga','reaberta','documento') NOT NULL,
+    detalhe      VARCHAR(255) NULL,
+    criado_em    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_historico_obrigacao FOREIGN KEY (obrigacao_id)
+        REFERENCES obrigacoes (id) ON DELETE CASCADE,
+    CONSTRAINT fk_historico_usuario FOREIGN KEY (usuario_id)
+        REFERENCES usuarios (id) ON DELETE SET NULL,
+    -- linha do tempo de uma guia: busca por guia, em ordem de data
+    INDEX idx_historico_obrigacao_data (obrigacao_id, criado_em)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- =====================================================================
 -- DADOS DE EXEMPLO
 -- Datas relativas a CURDATE() para o painel sempre ter números na demo.
@@ -198,3 +219,21 @@ INSERT INTO avaliacoes (usuario_id, nota, comentario) VALUES
 INSERT INTO cobrancas (empresa_id, usuario_id, cobrado_em) VALUES
  (1, 1, NOW() - INTERVAL 9 DAY),
  (1, 1, NOW() - INTERVAL 2 DAY);
+
+-- Histórico de exemplo, coerente com as guias acima:
+-- 1) toda guia foi cadastrada pela contadora 5 dias depois do início da
+--    competência (nunca no futuro);
+INSERT INTO historico (obrigacao_id, usuario_id, acao, criado_em)
+SELECT id, 1, 'criada', LEAST(TIMESTAMP(competencia + INTERVAL 5 DAY, '09:00:00'), NOW() - INTERVAL 1 HOUR)
+  FROM obrigacoes;
+
+-- 2) uma correção de valor feita pela contadora (INSS da Padaria);
+INSERT INTO historico (obrigacao_id, usuario_id, acao, detalhe, criado_em)
+SELECT id, 1, 'editada', 'valor: R$ 950,00 → R$ 980,15', LEAST(TIMESTAMP(competencia + INTERVAL 8 DAY, '14:20:00'), NOW() - INTERVAL 30 MINUTE)
+  FROM obrigacoes WHERE empresa_id = 1 AND tipo = 'INSS';
+
+-- 3) cada guia paga foi marcada por quem tem acesso à empresa: o próprio
+--    cliente (Padaria = Carlos, Clínica = Joana) ou a contadora (demais).
+INSERT INTO historico (obrigacao_id, usuario_id, acao, criado_em)
+SELECT id, CASE empresa_id WHEN 1 THEN 2 WHEN 3 THEN 3 ELSE 1 END, 'paga', pago_em
+  FROM obrigacoes WHERE status = 'paga';

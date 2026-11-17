@@ -7,6 +7,7 @@ namespace App\Controllers;
 use App\Core\Auth;
 use App\Core\Controller;
 use App\Models\Documento;
+use App\Models\Historico;
 use App\Models\Obrigacao;
 use App\Services\Upload;
 use Throwable;
@@ -38,6 +39,7 @@ final class DocumentoController extends Controller
             Upload::apagar($salvo['arquivo']); // não deixa arquivo órfão no disco
             throw $falha;
         }
+        (new Historico())->registrar($obrigacaoId, Auth::usuario()['id'], Historico::DOCUMENTO, $salvo['nome_original']);
 
         $this->flash('success', 'Documento "' . $salvo['nome_original'] . '" enviado.');
         $this->voltar($obrigacaoId);
