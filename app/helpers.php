@@ -121,6 +121,22 @@ function tamanho_arquivo(int|string $bytes): string
         : max(1, (int) round($bytes / 1024)) . ' KB';
 }
 
+/** Última cobrança em texto: "nunca cobrado", "cobrado hoje", "cobrado ontem", "cobrado há 9 dias". */
+function cobrado_ha(?string $quando): string
+{
+    if ($quando === null) {
+        return 'nunca cobrado';
+    }
+
+    $dias = (int) (new DateTimeImmutable(substr($quando, 0, 10)))->diff(new DateTimeImmutable('today'))->days;
+
+    return match ($dias) {
+        0       => 'cobrado hoje',
+        1       => 'cobrado ontem',
+        default => "cobrado há {$dias} dias",
+    };
+}
+
 /** "2026-10-01" -> "10/2026" */
 function competencia_br(?string $competencia): string
 {
