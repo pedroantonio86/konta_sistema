@@ -43,6 +43,7 @@ $editando = $id !== null;
         <div class="col-md-4">
             <label for="cnpj" class="form-label">CNPJ *</label>
             <input type="text" id="cnpj" name="cnpj" maxlength="18" required placeholder="00.000.000/0000-00"
+                   data-mascara="cnpj" autocapitalize="characters" spellcheck="false" autocomplete="off"
                    class="form-control<?= classe_invalido($erros, 'cnpj') ?>"
                    value="<?= e($dados['cnpj']) ?>">
             <?= erro_campo($erros, 'cnpj') ?>
@@ -63,6 +64,7 @@ $editando = $id !== null;
         <div class="col-md-4">
             <label for="whatsapp" class="form-label">WhatsApp</label>
             <input type="tel" id="whatsapp" name="whatsapp" maxlength="20" placeholder="(86) 99999-0000"
+                   data-mascara="telefone"
                    class="form-control<?= classe_invalido($erros, 'whatsapp') ?>"
                    value="<?= e($dados['whatsapp']) ?>">
             <?= erro_campo($erros, 'whatsapp') ?>
