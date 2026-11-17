@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 use App\Controllers\AuthController;
 use App\Controllers\AvaliacaoController;
+use App\Controllers\AvisoController;
 use App\Controllers\DocumentoController;
 use App\Controllers\EmpresaController;
 use App\Controllers\ObrigacaoController;
@@ -60,5 +61,7 @@ return [
         'documentos/enviar'    => [DocumentoController::class, 'enviar', $logados],
 
         'avaliacoes/salvar'    => [AvaliacaoController::class, 'salvar', $logados],
+
+        'avisos/fechar'        => [AvisoController::class, 'fechar', [Auth::CLIENTE]],
     ],
 ];

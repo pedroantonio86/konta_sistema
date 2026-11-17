@@ -14,12 +14,18 @@ final class Auth
     public const CONTADOR = 'contador';
     public const CLIENTE = 'cliente';
 
+    /** Chave da sessão: o cliente fechou a faixa de aviso de guias. */
+    public const AVISO_FECHADO = 'aviso_fechado';
+
     /** @param array{id: int, nome: string, perfil: string, empresa_id: ?int} $usuario */
     public static function entrar(array $usuario): void
     {
         // Troca o ID da sessão no login: se um atacante "plantou" um ID
         // conhecido no navegador da vítima (session fixation), ele perde a validade.
         session_regenerate_id(true);
+
+        // A cada login a faixa de aviso volta a aparecer.
+        unset($_SESSION[self::AVISO_FECHADO]);
 
         $_SESSION['usuario'] = [
             'id'         => (int) $usuario['id'],

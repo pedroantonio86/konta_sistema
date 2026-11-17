@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use App\Models\Painel;
+
 /**
  * Base dos controllers: atalhos para renderizar, redirecionar e avisar.
  */
@@ -12,7 +14,30 @@ abstract class Controller
     /** @param array<string, mixed> $dados */
     protected function render(string $view, array $dados = []): void
     {
-        View::render($view, $dados);
+        View::render($view, $dados + ['avisoCliente' => $this->avisoCliente()]);
+    }
+
+    /**
+     * Números da faixa de aviso do cliente (guias vencidas e a vencer).
+     * Calculado aqui, e não no layout, para a View não consultar o banco (MVC).
+     * Reaproveita os indicadores do painel: mesma regra do Semaforo e
+     * mesmo prazo de 7 dias.
+     *
+     * @return array{vencidas: int, a_vencer: int}|null null = não mostrar a faixa
+     */
+    private function avisoCliente(): ?array
+    {
+        if (!Auth::logado() || Auth::ehContador() || !empty($_SESSION[Auth::AVISO_FECHADO])) {
+            return null;
+        }
+
+        $indicadores = (new Painel())->indicadores(Auth::empresaId());
+
+        if ($indicadores['vencidas'] === 0 && $indicadores['a_vencer'] === 0) {
+            return null;
+        }
+
+        return ['vencidas' => $indicadores['vencidas'], 'a_vencer' => $indicadores['a_vencer']];
     }
 
     /**
