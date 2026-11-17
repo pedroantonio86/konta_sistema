@@ -21,6 +21,8 @@ if ($aVencer > 0) {
 ?>
 <div class="alert alert-<?= $vencidas > 0 ? 'danger' : 'warning' ?> d-flex align-items-center gap-2" role="alert">
     <span class="me-auto">Você tem <?= implode(' e ', $partes) /* partes já escapadas acima */ ?>.</span>
+    <a class="btn btn-sm btn-light" href="<?= e(url('obrigacoes/agenda')) ?>"
+       title="Baixa um arquivo .ics com todas as guias pendentes, com lembrete 3 dias antes">Adicionar à agenda</a>
     <form method="post" action="<?= e(url('avisos/fechar')) ?>" class="m-0">
         <?= csrf_campo() ?>
         <input type="hidden" name="voltar" value="<?= e($_SERVER['REQUEST_URI'] ?? '') ?>">
