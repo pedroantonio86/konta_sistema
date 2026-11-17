@@ -40,9 +40,10 @@ if ($usuarioLogado !== null) {
 </head>
 <body class="bg-body-tertiary">
 <?php if ($usuarioLogado !== null): ?>
-    <nav class="navbar navbar-expand-md navbar-konta mb-4">
+    <!-- data-bs-theme="dark": o Bootstrap desenha o botão do menu (celular) em branco. -->
+    <nav class="navbar navbar-expand-md navbar-konta mb-4" data-bs-theme="dark">
         <div class="container">
-            <a class="navbar-brand" href="<?= e(url()) ?>" aria-label="Konta, ir para o painel"><?= logo_konta() ?></a>
+            <a class="navbar-brand" href="<?= e(url()) ?>" aria-label="Konta, ir para o painel"><?= logo_konta(true) ?></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu"
                     aria-controls="menu" aria-expanded="false" aria-label="Abrir menu">
                 <span class="navbar-toggler-icon"></span>
@@ -57,13 +58,13 @@ if ($usuarioLogado !== null) {
                     <?php endforeach; ?>
                 </ul>
                 <div class="d-flex align-items-center gap-2 py-2 py-md-0">
-                    <span class="small">
+                    <span class="small usuario-nome">
                         <?= e($usuarioLogado['nome']) ?>
                         <span class="badge selo-perfil ms-1"><?= e($usuarioLogado['perfil']) ?></span>
                     </span>
                     <form method="post" action="<?= e(url('auth/logout')) ?>" class="m-0">
                         <?= csrf_campo() ?>
-                        <button type="submit" class="btn btn-outline-primary btn-sm">Sair</button>
+                        <button type="submit" class="btn btn-outline-light btn-sm">Sair</button>
                     </form>
                 </div>
             </div>

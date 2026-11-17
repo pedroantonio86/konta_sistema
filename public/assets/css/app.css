@@ -31,9 +31,23 @@
 @font-face {
     font-family: 'Sora';
     font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('../fonts/sora-600.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Sora';
+    font-style: normal;
     font-weight: 700;
     font-display: swap;
     src: url('../fonts/sora-700.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Sora';
+    font-style: normal;
+    font-weight: 800;
+    font-display: swap;
+    src: url('../fonts/sora-800.woff2') format('woff2');
 }
 
 /* ===================================================================
@@ -66,11 +80,22 @@
 /* Inter 600 no lugar do "negrito" padrão (700), que não está entre as fontes locais. */
 b, strong, .fw-bold, .fw-semibold, th, dt, .badge, .btn, .form-label { font-weight: 600; }
 
-/* Sora 700: SOMENTE no logo e nos h1 das páginas. */
-h1, .logo-texto { font-family: 'Sora', var(--bs-body-font-family); font-weight: 700; }
+/* Sora só no logo (800), nos itens do menu (600) e nos h1 das páginas (700). */
+/* h1[class] também: as páginas usam <h1 class="h3">, e a classe .h3 do Bootstrap
+   (peso 500) venceria a regra só do elemento h1. */
+h1, h1[class] { font-family: 'Sora', var(--bs-body-font-family); font-weight: 700; }
+.logo-texto { font-family: 'Sora', var(--bs-body-font-family); font-weight: 800; }
 
-/* Botões na cor da marca (normal, hover, ativo, desabilitado). */
+/* Utilitários da cor da marca (o card "Total pendente" do painel). */
+.border-marca { border-color: var(--konta-marca) !important; }
+.text-marca, .text-marca-emphasis { color: var(--konta-marca) !important; }
+
+/* Botões na cor da marca (normal, hover, ativo, desabilitado), texto branco. */
 .btn-primary {
+    --bs-btn-color: #fff;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-active-color: #fff;
+    --bs-btn-disabled-color: #fff;
     --bs-btn-bg: var(--konta-marca);
     --bs-btn-border-color: var(--konta-marca);
     --bs-btn-hover-bg: var(--konta-marca-escura);
@@ -119,13 +144,22 @@ h1, .logo-texto { font-family: 'Sora', var(--bs-body-font-family); font-weight: 
 .logo-texto { font-size: 1.375rem; line-height: 1; color: var(--konta-marca); }
 .logo-branco .logo-texto { color: #fff; }
 
-.navbar-konta { background: #fff; border-bottom: 1px solid var(--konta-linha); }
-.navbar-konta .nav-link { color: #374151; font-weight: 600; padding-bottom: .4rem; border-bottom: 2px solid transparent; }
-.navbar-konta .nav-link:hover { color: var(--konta-marca); }
-.navbar-konta .nav-link.active { color: var(--konta-marca); border-bottom-color: var(--konta-marca); }
+/* Barra superior na cor da marca, com texto branco (logo invertido no layout). */
+.navbar-konta { background: var(--konta-marca); }
+.navbar-konta .nav-link {
+    font-family: 'Sora', var(--bs-body-font-family);
+    font-weight: 600;
+    color: rgba(255, 255, 255, .8);
+    padding-bottom: .4rem;
+    border-bottom: 2px solid transparent;
+}
+.navbar-konta .nav-link:hover,
+.navbar-konta .nav-link:focus { color: #fff; }
+.navbar-konta .nav-link.active { color: #fff; border-bottom-color: #fff; }
+.navbar-konta .usuario-nome { color: #fff; }
 
-/* Selo do perfil (contador / cliente) ao lado do nome. */
-.selo-perfil { background: var(--konta-fundo-suave); color: var(--konta-marca-escura); border: 1px solid var(--konta-borda-suave); }
+/* Selo do perfil (contador / cliente) ao lado do nome, legível sobre a barra. */
+.selo-perfil { background: rgba(255, 255, 255, .15); color: #fff; }
 
 /* ===================================================================
    Tela de login
@@ -146,8 +180,8 @@ h1, .logo-texto { font-family: 'Sora', var(--bs-body-font-family); font-weight: 
 /* Ícone dos cards do painel: na cor do card, discreto. */
 .icone-card { font-size: 1.25rem; opacity: .85; }
 
-/* Ícone ao lado do texto do botão. */
-.btn .bi { margin-right: .35rem; }
+/* Ícone ao lado do texto do botão: 6px de espaço. */
+.btn .bi { margin-right: 6px; }
 
 /* ===================================================================
    Semáforo: faixa colorida à esquerda da linha/cartão da obrigação,
