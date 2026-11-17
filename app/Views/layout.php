@@ -12,10 +12,11 @@ $usuarioLogado = \App\Core\Auth::usuario();
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e(isset($titulo) ? $titulo . ' · Konta' : 'Konta') ?></title>
+    <!-- Bootstrap 5.3.3 servido do próprio Konta (public/assets/vendor): funciona sem internet.
+         O integrity confere que o arquivo é idêntico ao oficial publicado no CDN. -->
     <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-          crossorigin="anonymous">
+          href="<?= e(asset('assets/vendor/bootstrap/bootstrap.min.css')) ?>"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH">
     <link rel="stylesheet" href="<?= e(asset('assets/css/app.css')) ?>">
 </head>
 <body class="bg-body-tertiary">
@@ -65,9 +66,8 @@ $usuarioLogado = \App\Core\Auth::usuario();
     <?= $conteudo /* já escapado dentro de cada view */ ?>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+<script src="<?= e(asset('assets/vendor/bootstrap/bootstrap.bundle.min.js')) ?>"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"></script>
 <script src="<?= e(asset('assets/js/mascaras.js')) ?>" defer></script>
 </body>
 </html>

@@ -37,7 +37,9 @@ validação no servidor com erro por campo.
 
 - PHP 8.2 **sem framework**: MVC escrito à mão, entrada única em `public/index.php`
 - MariaDB 10.4 / MySQL 8 via **PDO com prepared statements**
-- Views em PHP puro + Bootstrap 5.3 (CDN)
+- Views em PHP puro + Bootstrap 5.3.3 e Chart.js 4.4.1, com cópias locais em
+  `public/assets/vendor/` (o sistema funciona sem internet; o `integrity`
+  confere que os arquivos são idênticos aos oficiais)
 - PHPUnit 11 (só em desenvolvimento: o sistema roda sem a pasta `vendor/`)
 
 ## Instalação (XAMPP no Windows)
