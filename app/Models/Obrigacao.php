@@ -23,12 +23,15 @@ final class Obrigacao extends Model
         'OUTRO'   => 'Outro',
     ];
 
-    private const SELECT = 'SELECT o.*, e.razao_social, e.nome_fantasia, e.whatsapp
+    private const SELECT = 'SELECT o.*, e.razao_social, e.nome_fantasia, e.cnpj, e.whatsapp
                               FROM obrigacoes o
                               JOIN empresas e ON e.id = o.empresa_id';
 
+    private const ORDEM = "ORDER BY o.status = 'paga', o.vencimento, o.id";
+
     /**
-     * Pendentes primeiro, da mais urgente para a mais distante; pagas no fim.
+     * Uma página da listagem. Pendentes primeiro, da mais urgente para a
+     * mais distante; pagas no fim.
      *
      * @param array{busca: string, empresa_id: ?int, tipo: string, situacao: string, competencia: string} $filtros
      * @return list<array<string, mixed>>
@@ -37,17 +40,30 @@ final class Obrigacao extends Model
     {
         [$where, $params] = $this->montarFiltros($filtros);
 
-        $stmt = $this->db->prepare(
-            self::SELECT . " {$where}
-             ORDER BY o.status = 'paga', o.vencimento, o.id
-             LIMIT :limite OFFSET :offset"
-        );
+        $stmt = $this->db->prepare(self::SELECT . " {$where} " . self::ORDEM . ' LIMIT :limite OFFSET :offset');
         foreach ($params as $nome => $valor) {
             $stmt->bindValue($nome, $valor);
         }
         $stmt->bindValue(':limite', $limite, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Todas as obrigações dos filtros, sem paginação (para a planilha).
+     * Mesmo WHERE e mesma ordem da listagem: a planilha bate com a tela.
+     *
+     * @param array{busca: string, empresa_id: ?int, tipo: string, situacao: string, competencia: string} $filtros
+     * @return list<array<string, mixed>>
+     */
+    public function listarTodas(array $filtros): array
+    {
+        [$where, $params] = $this->montarFiltros($filtros);
+
+        $stmt = $this->db->prepare(self::SELECT . " {$where} " . self::ORDEM);
+        $stmt->execute($params);
 
         return $stmt->fetchAll();
     }

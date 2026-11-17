@@ -14,9 +14,15 @@ $temFiltro = $filtrosLink !== [];
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="h3 mb-0"><?= $ehContador ? 'Obrigações' : 'Minhas obrigações' ?></h1>
-    <?php if ($ehContador): ?>
-        <a class="btn btn-primary" href="<?= e(url('obrigacoes/criar')) ?>">+ Nova obrigação</a>
-    <?php endif; ?>
+    <div class="d-flex gap-2">
+        <?php if ($obrigacoes !== []): ?>
+            <a class="btn btn-outline-secondary" href="<?= e(url('obrigacoes/exportar', $filtrosLink)) ?>"
+               title="Baixa em CSV o que está filtrado, sem paginação">Exportar planilha</a>
+        <?php endif; ?>
+        <?php if ($ehContador): ?>
+            <a class="btn btn-primary" href="<?= e(url('obrigacoes/criar')) ?>">+ Nova obrigação</a>
+        <?php endif; ?>
+    </div>
 </div>
 
 <form method="get" action="<?= e(url()) ?>" class="card card-body shadow-sm mb-3" role="search">

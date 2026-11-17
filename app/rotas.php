@@ -33,6 +33,7 @@ return [
         // cliente também acessa: o controller limita à empresa dele
         'obrigacoes/index'  => [ObrigacaoController::class, 'index', $logados],
         'obrigacoes/ver'    => [ObrigacaoController::class, 'ver', $logados],
+        'obrigacoes/exportar' => [ObrigacaoController::class, 'exportar', $logados],
         'obrigacoes/criar'  => [ObrigacaoController::class, 'criar', $contador],
         'obrigacoes/editar' => [ObrigacaoController::class, 'editar', $contador],
 

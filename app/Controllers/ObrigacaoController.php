@@ -11,6 +11,7 @@ use App\Core\Validator;
 use App\Models\Documento;
 use App\Models\Empresa;
 use App\Models\Obrigacao;
+use App\Services\Planilha;
 use App\Services\Semaforo;
 use App\Services\Upload;
 
@@ -34,15 +35,7 @@ final class ObrigacaoController extends Controller
     public function index(): void
     {
         $ehContador = Auth::ehContador();
-        $filtros = $this->lerFiltros();
-        $filtrosLink = array_filter(array_map('strval', $filtros)); // só os preenchidos vão para a paginação
-
-        if (!$ehContador) {
-            // Cliente: a empresa vem da SESSÃO, nunca do GET. Mesmo que ele
-            // digite ?empresa_id=3 na URL, só verá a própria empresa.
-            $filtros['empresa_id'] = Auth::empresaId();
-            unset($filtrosLink['empresa_id']);
-        }
+        [$filtros, $filtrosLink] = $this->filtrosDoUsuario();
 
         $paginacao = new Paginacao($this->obrigacoes->contar($filtros), $_GET['pagina'] ?? 1);
 
@@ -55,6 +48,39 @@ final class ObrigacaoController extends Controller
             'filtrosLink' => $filtrosLink,
             'ehContador'  => $ehContador,
         ]);
+    }
+
+    /**
+     * Baixa em CSV exatamente o que a lista mostra com os filtros atuais,
+     * sem paginação. Leitura apenas (GET): por isso não leva token CSRF.
+     */
+    public function exportar(): void
+    {
+        [$filtros] = $this->filtrosDoUsuario();
+        $obrigacoes = $this->obrigacoes->listarTodas($filtros);
+
+        header('Content-Type: text/csv; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="obrigacoes-' . date('Y-m-d') . '.csv"');
+        header('Cache-Control: private, no-store');
+
+        $saida = fopen('php://output', 'w');
+        Planilha::escrever(
+            $saida,
+            ['Empresa', 'CNPJ', 'Tipo', 'Competência', 'Valor (R$)', 'Vencimento', 'Situação', 'Pago em', 'Observação'],
+            array_map(static fn (array $o): array => [
+                $o['razao_social'],
+                cnpj_formatado($o['cnpj']),
+                Obrigacao::TIPOS[$o['tipo']],
+                competencia_br($o['competencia']),
+                number_format((float) $o['valor'], 2, ',', ''), // sem ponto de milhar: o Excel lê como número
+                data_br($o['vencimento']),
+                Semaforo::rotulo(Semaforo::calcular($o['status'], $o['vencimento'])),
+                $o['pago_em'] === null ? '' : data_br($o['pago_em']),
+                $o['observacao'] ?? '',
+            ], $obrigacoes)
+        );
+        fclose($saida);
+        exit;
     }
 
     public function ver(): void
@@ -162,6 +188,27 @@ final class ObrigacaoController extends Controller
             competencia_br($obrigacao['competencia'])
         ));
         $this->redirect('obrigacoes/index');
+    }
+
+    /**
+     * Filtros da listagem/planilha já com o escopo do perfil aplicado.
+     * Cliente: a empresa vem da SESSÃO, nunca do GET. Mesmo que ele digite
+     * ?empresa_id=3 na URL, só verá (e exportará) a própria empresa.
+     *
+     * @return array{0: array{busca: string, empresa_id: ?int, tipo: string, situacao: string, competencia: string}, 1: array<string, string>}
+     *         [filtros para a consulta, filtros preenchidos para os links]
+     */
+    private function filtrosDoUsuario(): array
+    {
+        $filtros = $this->lerFiltros();
+        $filtrosLink = array_filter(array_map('strval', $filtros));
+
+        if (!Auth::ehContador()) {
+            $filtros['empresa_id'] = Auth::empresaId();
+            unset($filtrosLink['empresa_id']);
+        }
+
+        return [$filtros, $filtrosLink];
     }
 
     /**
