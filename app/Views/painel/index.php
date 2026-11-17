@@ -4,6 +4,9 @@
  * @var array<string, mixed>|null           $empresa     empresa do cliente (null para o contador)
  * @var array<string, int|string>           $indicadores
  * @var list<array<string, mixed>>          $proximas
+ * @var array<string, int>                  $situacoes  situação => quantidade
+ * @var list<array<string, mixed>>          $ranking    vazio para o cliente
+ * @var list<array{rotulo: string, valor: float, guias: int}> $semanas
  */
 use App\Models\Obrigacao;
 use App\Models\Painel;
@@ -31,7 +34,7 @@ $cartoes = [
     [
         'titulo' => 'Pagas neste mês',
         'numero' => $indicadores['pagas_mes'],
-        'detalhe' => 'guias quitadas',
+        'detalhe' => moeda($indicadores['valor_pago_mes']),
         'cor'    => Semaforo::classe(Semaforo::PAGA),
         'link'   => url('obrigacoes/index', ['situacao' => Semaforo::PAGA]),
     ],
@@ -65,6 +68,8 @@ $cartoes = [
         </div>
     <?php endforeach; ?>
 </div>
+
+<?php require __DIR__ . '/graficos.php'; ?>
 
 <div class="card shadow-sm">
     <div class="card-header bg-white d-flex justify-content-between align-items-center">
