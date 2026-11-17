@@ -21,6 +21,7 @@ $cartoes = [
         'titulo' => 'Vencidas',
         'numero' => $indicadores['vencidas'],
         'detalhe' => moeda($indicadores['valor_vencido']),
+        'icone'  => 'exclamation-octagon',
         'cor'    => Semaforo::classe(Semaforo::VENCIDA),
         'link'   => url('obrigacoes/index', ['situacao' => Semaforo::VENCIDA]),
     ],
@@ -28,6 +29,7 @@ $cartoes = [
         'titulo' => 'Vencem em até ' . Semaforo::DIAS_ALERTA . ' dias',
         'numero' => $indicadores['a_vencer'],
         'detalhe' => moeda($indicadores['valor_a_vencer']),
+        'icone'  => 'hourglass-split',
         'cor'    => Semaforo::classe(Semaforo::ALERTA),
         'link'   => url('obrigacoes/index', ['situacao' => Semaforo::ALERTA]),
     ],
@@ -35,6 +37,7 @@ $cartoes = [
         'titulo' => 'Pagas neste mês',
         'numero' => $indicadores['pagas_mes'],
         'detalhe' => moeda($indicadores['valor_pago_mes']),
+        'icone'  => 'check2-circle',
         'cor'    => Semaforo::classe(Semaforo::PAGA),
         'link'   => url('obrigacoes/index', ['situacao' => Semaforo::PAGA]),
     ],
@@ -42,7 +45,8 @@ $cartoes = [
         'titulo' => 'Total pendente',
         'numero' => moeda($indicadores['total_pendente']),
         'detalhe' => 'soma das guias não pagas',
-        'cor'    => 'primary',
+        'icone'  => 'wallet2',
+        'cor'    => 'primary', // cor da marca: total não é uma situação do semáforo
         'link'   => url('obrigacoes/index'),
     ],
 ];
@@ -60,7 +64,10 @@ $cartoes = [
         <div class="col-6 col-lg-3">
             <a href="<?= e($cartao['link']) ?>" class="card h-100 shadow-sm text-decoration-none border-0 border-start border-4 border-<?= e($cartao['cor']) ?>">
                 <div class="card-body">
-                    <div class="small text-muted"><?= e($cartao['titulo']) ?></div>
+                    <div class="d-flex justify-content-between align-items-start small text-muted">
+                        <span><?= e($cartao['titulo']) ?></span>
+                        <span class="icone-card text-<?= e($cartao['cor']) ?>-emphasis"><?= icone($cartao['icone']) ?></span>
+                    </div>
                     <div class="fs-3 fw-bold text-<?= e($cartao['cor']) ?>-emphasis"><?= e($cartao['numero']) ?></div>
                     <div class="small text-muted"><?= e($cartao['detalhe']) ?></div>
                 </div>
@@ -77,7 +84,7 @@ $cartoes = [
         <a class="small" href="<?= e(url('obrigacoes/index')) ?>">ver todas</a>
     </div>
     <?php if ($proximas === []): ?>
-        <div class="card-body text-muted">Nenhuma guia pendente a vencer. 🎉</div>
+        <?= estado_vazio('calendar-check', 'Nenhuma guia pendente a vencer. Tudo em dia!') ?>
     <?php else: ?>
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">

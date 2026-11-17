@@ -23,7 +23,7 @@ $valorSemanas = array_sum(array_column($semanas, 'valor'));
     <div class="card-body">
         <h2 class="h6">Situação das <?= e($totalGuias) ?> guia(s)</h2>
         <?php if ($totalGuias === 0): ?>
-            <p class="text-muted mb-0">Nenhuma obrigação cadastrada.</p>
+            <?= estado_vazio('inbox', 'Nenhuma obrigação cadastrada ainda.') ?>
         <?php else: ?>
             <div class="progress-stacked barra-situacao" role="img"
                  aria-label="<?= e(implode(', ', array_map(
@@ -97,7 +97,7 @@ $valorSemanas = array_sum(array_column($semanas, 'valor'));
                         <a class="small" href="<?= e(url('obrigacoes/cobranca')) ?>">Central de cobrança →</a>
                     </div>
                     <?php if ($ranking === []): ?>
-                        <p class="text-muted mb-0">Nenhuma guia vencida. 🎉</p>
+                        <?= estado_vazio('check2-circle', 'Nenhuma guia vencida. Tudo em dia!') ?>
                     <?php else: ?>
                         <div class="table-responsive">
                             <table class="table table-sm align-middle mb-0">
@@ -116,10 +116,10 @@ $valorSemanas = array_sum(array_column($semanas, 'valor'));
                                         <td class="text-end">
                                             <?php if ($link === null): ?>
                                                 <span class="d-inline-block" tabindex="0" title="Empresa sem WhatsApp válido cadastrado">
-                                                    <button type="button" class="btn btn-sm btn-success" disabled>Cobrar</button>
+                                                    <button type="button" class="btn btn-sm btn-primary" disabled><?= icone('whatsapp') ?>Cobrar</button>
                                                 </span>
                                             <?php else: ?>
-                                                <a class="btn btn-sm btn-success" href="<?= e($link) ?>" target="_blank" rel="noopener noreferrer">Cobrar</a>
+                                                <a class="btn btn-sm btn-primary" href="<?= e($link) ?>" target="_blank" rel="noopener noreferrer"><?= icone('whatsapp') ?>Cobrar</a>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
@@ -155,7 +155,7 @@ $valorSemanas = array_sum(array_column($semanas, 'valor'));
             datasets: [{
                 label: 'Valor pendente',
                 data: semanas.map(function (s) { return s.valor; }),
-                backgroundColor: '#2a78d6',
+                backgroundColor: '#155E75', // cor da marca (o gráfico mostra valor, não situação)
                 borderRadius: {topLeft: 4, topRight: 4},
                 borderSkipped: 'bottom',
                 maxBarThickness: 24

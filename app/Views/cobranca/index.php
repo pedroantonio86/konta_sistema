@@ -23,7 +23,7 @@ use App\Services\WhatsAppLink;
 </div>
 
 <?php if ($grupos === []): ?>
-    <div class="alert alert-light border">Nenhuma guia vencida ou vencendo em breve. Nada a cobrar hoje.</div>
+    <div class="card shadow-sm"><?= estado_vazio('check2-circle', 'Nenhuma guia vencida ou vencendo em breve. Nada a cobrar hoje!') ?></div>
 <?php endif; ?>
 
 <?php foreach ($grupos as $g):
@@ -45,11 +45,11 @@ use App\Services\WhatsAppLink;
                 <form method="post" action="<?= e(url('obrigacoes/cobrar')) ?>" target="_blank" class="m-0">
                     <?= csrf_campo() ?>
                     <input type="hidden" name="empresa_id" value="<?= e($empresa['empresa_id']) ?>">
-                    <button type="submit" class="btn btn-success btn-sm">Cobrar no WhatsApp</button>
+                    <button type="submit" class="btn btn-primary btn-sm"><?= icone('whatsapp') ?>Cobrar no WhatsApp</button>
                 </form>
             <?php else: ?>
                 <span class="d-inline-block" tabindex="0" title="Empresa sem WhatsApp válido cadastrado">
-                    <button type="button" class="btn btn-success btn-sm" disabled>Cobrar no WhatsApp</button>
+                    <button type="button" class="btn btn-primary btn-sm" disabled><?= icone('whatsapp') ?>Cobrar no WhatsApp</button>
                 </span>
             <?php endif; ?>
         </div>

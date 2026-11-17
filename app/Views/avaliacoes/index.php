@@ -45,7 +45,7 @@ $estrelas = static fn (float $nota): string =>
 </div>
 
 <?php if ($avaliacoes === []): ?>
-    <div class="alert alert-light border">Nenhuma avaliação ainda.</div>
+    <div class="card shadow-sm"><?= estado_vazio('chat-square-text', 'Nenhuma avaliação ainda.') ?></div>
 <?php else: ?>
     <h2 class="h5">Comentários <small class="text-muted fw-normal">(até <?= e(Avaliacao::LIMITE_LISTA) ?> mais recentes)</small></h2>
     <div class="list-group shadow-sm">

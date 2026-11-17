@@ -33,12 +33,12 @@ use App\Services\Semaforo;
             <?php if ($situacao !== Semaforo::PAGA): ?>
                 <?= botao_whatsapp($obrigacao) ?>
             <?php endif; ?>
-            <a class="btn btn-outline-primary" href="<?= e(url('obrigacoes/editar', ['id' => $obrigacao['id']])) ?>">Editar</a>
+            <a class="btn btn-outline-primary" href="<?= e(url('obrigacoes/editar', ['id' => $obrigacao['id']])) ?>"><?= icone('pencil') ?>Editar</a>
             <form method="post" action="<?= e(url('obrigacoes/excluir')) ?>" class="m-0"
                   onsubmit="return confirm('Excluir esta obrigação e os documentos anexados?');">
                 <?= csrf_campo() ?>
                 <input type="hidden" name="id" value="<?= e($obrigacao['id']) ?>">
-                <button type="submit" class="btn btn-outline-danger">Excluir</button>
+                <button type="submit" class="btn btn-outline-danger"><?= icone('trash') ?>Excluir</button>
             </form>
         </div>
     <?php endif; ?>
@@ -77,7 +77,7 @@ use App\Services\Semaforo;
                   onsubmit="return confirm('Confirmar que esta guia foi paga?');">
                 <?= csrf_campo() ?>
                 <input type="hidden" name="id" value="<?= e($obrigacao['id']) ?>">
-                <button type="submit" class="btn btn-success">✓ Marcar como paga</button>
+                <button type="submit" class="btn btn-primary"><?= icone('check2-circle') ?>Marcar como paga</button>
                 <span class="small text-muted ms-2">Anexe o comprovante abaixo para o escritório conferir.</span>
             </form>
         </div>
@@ -87,7 +87,7 @@ use App\Services\Semaforo;
                   onsubmit="return confirm('Reabrir esta guia? Ela volta a pendente e o semáforo é recalculado.');">
                 <?= csrf_campo() ?>
                 <input type="hidden" name="id" value="<?= e($obrigacao['id']) ?>">
-                <button type="submit" class="btn btn-outline-secondary">↺ Reabrir guia</button>
+                <button type="submit" class="btn btn-outline-secondary"><?= icone('arrow-counterclockwise') ?>Reabrir guia</button>
                 <span class="small text-muted ms-2">Use se a guia foi marcada como paga por engano.</span>
             </form>
         </div>
@@ -106,7 +106,7 @@ use App\Services\Semaforo;
                 <?php foreach ($documentos as $doc): ?>
                     <li class="list-group-item px-0 d-flex flex-wrap justify-content-between gap-2">
                         <a href="<?= e(url('documentos/baixar', ['id' => $doc['id']])) ?>" class="text-break">
-                            📄 <?= e($doc['nome_original']) ?>
+                            <?= icone('file-earmark-text') ?> <?= e($doc['nome_original']) ?>
                         </a>
                         <small class="text-muted">
                             <?= e(tamanho_arquivo($doc['tamanho'])) ?>
@@ -124,7 +124,7 @@ use App\Services\Semaforo;
             <input type="hidden" name="obrigacao_id" value="<?= e($obrigacao['id']) ?>">
             <input type="file" name="arquivo" required class="form-control w-auto flex-grow-1"
                    accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" aria-label="Arquivo">
-            <button type="submit" class="btn btn-primary">Enviar</button>
+            <button type="submit" class="btn btn-primary"><?= icone('paperclip') ?>Enviar documento</button>
         </form>
     </div>
 </div>
