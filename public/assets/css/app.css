@@ -164,10 +164,34 @@ h1, h1[class] { font-family: 'Sora', var(--bs-body-font-family); font-weight: 70
 /* ===================================================================
    Tela de login
    =================================================================== */
-.login-caixa { max-width: 880px; }
-.login-marca { background: var(--konta-marca); color: #fff; }
-.login-slogan { font-family: 'Sora', var(--bs-body-font-family); font-weight: 700; font-size: 1.75rem; line-height: 1.2; }
-.login-apoio { color: var(--konta-borda-suave); }
+/* Página inteira em coluna: a faixa do meio cresce e ocupa toda a altura
+   que sobra entre a barra e o rodapé (equivale a calc(100vh - barra - rodapé)). */
+.pagina-login { min-height: 100vh; display: flex; flex-direction: column; background: var(--konta-marca); }
+.login-topo { background: #fff; border-bottom: 1px solid var(--konta-linha); }
+.login-faixa { flex: 1; display: flex; align-items: center; background: var(--konta-marca); }
+.login-faixa > .container { width: 100%; }
+.login-rodape { background: var(--konta-marca-escura); color: rgba(255, 255, 255, .6); }
+
+/* h1.login-titulo: vence a regra geral "h1, h1[class]" (peso 700). */
+h1.login-titulo {
+    font-family: 'Sora', var(--bs-body-font-family);
+    font-weight: 800;
+    font-size: clamp(2.25rem, 4vw, 3.5rem);
+    line-height: 1.1;
+    color: #fff;
+}
+.login-subtitulo { color: rgba(255, 255, 255, .85); font-size: 1.125rem; max-width: 34rem; }
+.login-lista li { display: flex; align-items: baseline; gap: .6rem; margin-bottom: .6rem; color: #fff; }
+/* Ícone na borda suave da marca (não verde: verde é só do semáforo). */
+.login-lista .bi { color: var(--konta-borda-suave); }
+
+.login-cartao {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .12);
+    padding: 2rem;
+}
+.login-cartao-titulo { font-family: 'Sora', var(--bs-body-font-family); font-weight: 700; }
 
 /* ===================================================================
    Componentes

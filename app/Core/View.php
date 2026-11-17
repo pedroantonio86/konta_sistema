@@ -23,12 +23,13 @@ final class View
     /**
      * @param string               $view  caminho relativo a app/Views, sem ".php" (ex.: 'empresas/index')
      * @param array<string, mixed> $dados variáveis disponíveis na view
+     * @param string               $layout moldura da página: 'layout' (sistema) ou 'layout_login'
      */
-    public static function render(string $view, array $dados = []): void
+    public static function render(string $view, array $dados = [], string $layout = 'layout'): void
     {
         $conteudo = self::renderizarArquivo(self::PASTA . $view . '.php', $dados);
 
-        echo self::renderizarArquivo(self::PASTA . 'layout.php', $dados + ['conteudo' => $conteudo]);
+        echo self::renderizarArquivo(self::PASTA . $layout . '.php', $dados + ['conteudo' => $conteudo]);
     }
 
     /**

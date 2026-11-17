@@ -70,11 +70,12 @@ final class AuthController extends Controller
     {
         unset($dados['senha']); // a senha nunca volta para a tela
 
+        // Layout próprio: página inteira de apresentação, sem a barra do sistema.
         $this->render('auth/login', [
             'titulo'    => 'Entrar',
             'dados'     => $dados,
             'erros'     => $erros,
             'erroGeral' => $erroGeral,
-        ]);
+        ], 'layout_login');
     }
 }

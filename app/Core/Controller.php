@@ -12,9 +12,9 @@ use App\Models\Painel;
 abstract class Controller
 {
     /** @param array<string, mixed> $dados */
-    protected function render(string $view, array $dados = []): void
+    protected function render(string $view, array $dados = [], string $layout = 'layout'): void
     {
-        View::render($view, $dados + ['avisoCliente' => $this->avisoCliente()]);
+        View::render($view, $dados + ['avisoCliente' => $this->avisoCliente()], $layout);
     }
 
     /**
